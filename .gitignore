@@ -16,6 +16,7 @@
 .env
 .env.backup
 .env.production
+LocalValetDriver.php
 
 .phpactor.json
 .phpunit.result.cache

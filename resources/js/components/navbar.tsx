@@ -38,18 +38,19 @@ export default function Navbar() {
 >
     Paket Umroh
 </Link>
-                    <button
-                        onClick={() => handleScrollTo('agency')}
-                        className="cursor-pointer transition hover:text-amber-400"
-                    >
-                        Keagenan
-                    </button>
-                    <button
-                        onClick={() => handleScrollTo('gallery')}
-                        className="cursor-pointer transition hover:text-amber-400"
-                    >
-                        Galeri
-                    </button>
+                    <Link
+    href="/#agency"
+    className="cursor-pointer transition hover:text-amber-400"
+>
+    Keagenan
+</Link>
+
+<Link
+    href="/#gallery"
+    className="cursor-pointer transition hover:text-amber-400"
+>
+    Galeri
+</Link>
 
                     <div className="ml-4 flex items-center gap-3 border-l border-emerald-700 pl-6">
                         <Link
@@ -94,18 +95,19 @@ export default function Navbar() {
 >
     Paket Umroh
 </Link>
-                        <button
-                            onClick={() => handleScrollTo('agency')}
-                            className="cursor-pointer py-2 text-left transition hover:text-amber-400"
-                        >
-                            Keagenan
-                        </button>
-                        <button
-                            onClick={() => handleScrollTo('gallery')}
-                            className="cursor-pointer py-2 text-left transition hover:text-amber-400"
-                        >
-                            Galeri
-                        </button>
+                        <Link
+    href="/#agency"
+    className="cursor-pointer transition hover:text-amber-400"
+>
+    Keagenan
+</Link>
+
+<Link
+    href="/#gallery"
+    className="cursor-pointer transition hover:text-amber-400"
+>
+    Galeri
+</Link>
                     </div>
 
                     <div className="border-emerald-805 flex flex-col gap-3 border-t pt-4">
