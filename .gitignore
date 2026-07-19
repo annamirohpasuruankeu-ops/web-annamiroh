@@ -1,16 +1,22 @@
 /.phpunit.cache
 /bootstrap/ssr
 /node_modules
-/public/fonts-manifest.dev.json
-/public/hot
-/public/storage
+
+# --- PERUBAHAN JALUR ROOT (Pindahan dari folder public) ---
+/fonts-manifest.dev.json
+/hot
+# ---------------------------------------------------------
+
 /storage/*.key
 /storage/pail
 /vendor
 .DS_Store
+
+# Mengunci file env lokal agar tidak menimpa database Hostinger
 .env
 .env.backup
 .env.production
+
 .phpactor.json
 .phpunit.result.cache
 Homestead.json
