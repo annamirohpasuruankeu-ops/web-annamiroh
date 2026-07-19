@@ -5,17 +5,9 @@
 /public/fonts-manifest.dev.json
 /public/hot
 /public/storage
-/public/.htaccess
-/public/favicon.ico
-/public/index.php
-/public/robots.txt
 /storage/*.key
 /storage/pail
-/resources/js/actions
-/resources/js/routes
-/resources/js/wayfinder
 /vendor
-.htaccess
 .DS_Store
 .env
 .env.backup
