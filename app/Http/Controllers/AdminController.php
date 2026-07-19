@@ -1158,24 +1158,30 @@ xmlns="http://www.w3.org/TR/REC-html40">
         ]);
     }
 
-    public function registrationForm(Request $request, $id)
-    {
-        $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'pusat', 'agen'])) {
-            abort(403);
+   public function registrationForm(Request $request, $id)
+{
+    // 1. Ambil data booking beserta relasinya
+    $booking = Booking::with(['user.profile', 'package', 'jamaahMember'])->findOrFail($id);
+    $role = $request->user()->role;
+
+    // 2. Jika bukan admin/pusat, kita cek apakah ini milik agen tersebut
+    if ($role === 'agen') {
+        // Logika fleksibel: 
+        // Izinkan jika booking milik jamaah yang agen_id-nya adalah dia
+        // ATAU jika booking tersebut memang milik si Agen sendiri
+        $isMyJamaah = ($booking->user->agent_id === $request->user()->id);
+        $isMyOwnBooking = ($booking->user_id === $request->user()->id);
+
+        if (!$isMyJamaah && !$isMyOwnBooking) {
+            // Jika kedua kondisi di atas salah, baru kita blokir
+            abort(403, 'Unauthorized. Anda tidak memiliki akses ke data jamaah ini.');
         }
-
-        $booking = Booking::with(['user.profile', 'package', 'jamaahMember'])->findOrFail($id);
-
-        if ($role === 'agen' && $booking->user->agent_id !== $request->user()->id) {
-            abort(403, 'Unauthorized.');
-        }
-
-        return Inertia::render('admin/registration-form', [
-            'booking' => $booking
-        ]);
     }
 
+    return Inertia::render('admin/registration-form', [
+        'booking' => $booking
+    ]);
+}
     // ==========================================
     // POPUP PROMO MANAGEMENT
     // ==========================================
