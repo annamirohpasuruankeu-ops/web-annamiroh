@@ -347,8 +347,8 @@ xmlns="http://www.w3.org/TR/REC-html40">
             $issued = $item->paspor_issued ? date('d/m/Y', strtotime($item->paspor_issued)) : '';
             $expired = $item->paspor_expiry ? date('d/m/Y', strtotime($item->paspor_expiry)) : '';
 
-            $pasporLink = $item->paspor_file ? '<a href="' . asset('storage/' . $item->paspor_file) . '" class="link">Link Paspor</a>' : '-';
-            $vaksinLink = $item->vaksin_file ? '<a href="' . asset('storage/' . $item->vaksin_file) . '" class="link">Link Vaksin</a>' : '-';
+            $pasporLink = $item->paspor_file ? '<a href="' . asset('storage-file/' . $item->paspor_file) . '" class="link">Link Paspor</a>' : '-';
+            $vaksinLink = $item->vaksin_file ? '<a href="' . asset('storage-file/' . $item->vaksin_file) . '" class="link">Link Vaksin</a>' : '-';
 
             $html .= '<tr>
                 <td class="text-center">' . $no++ . '</td>
@@ -2064,8 +2064,8 @@ xmlns="http://www.w3.org/TR/REC-html40">
                 'pp' => $member->pp,
                 'vm' => $member->vm,
                 'vp' => $member->vp,
-                'paspor_file_url' => $member->paspor_file ? asset('storage/' . $member->paspor_file) : null,
-                'vaksin_file_url' => $member->vaksin_file ? asset('storage/' . $member->vaksin_file) : null,
+                'paspor_file_url' => $member->paspor_file ? asset('storage-file/' . $member->paspor_file) : null,
+                'vaksin_file_url' => $member->vaksin_file ? asset('storage-file/' . $member->vaksin_file) : null,
             ];
         });
 
@@ -2323,5 +2323,4 @@ xmlns="http://www.w3.org/TR/REC-html40">
         }
     }
 }
-
 

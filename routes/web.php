@@ -4,6 +4,15 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PublicPackageController;
+use Illuminate\Support\Facades\Storage;
+
+// Fallback file publik untuk hosting yang tidak mendukung symbolic link.
+// Jika storage-file berhasil menjadi link, web server akan melayani file secara langsung.
+Route::get('/storage-file/{path}', function (string $path) {
+    abort_if(str_contains($path, '..') || !Storage::disk('public')->exists($path), 404);
+
+    return Storage::disk('public')->response($path);
+})->where('path', '.*');
 
 Route::get('/kategori-program/umroh-reguler', [PublicPackageController::class, 'index'])->name('packages.reguler');
 Route::get('/paket-umroh/{package}', [PublicPackageController::class, 'show'])->name('packages.show');

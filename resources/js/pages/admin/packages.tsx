@@ -11,12 +11,12 @@ import { router } from '@inertiajs/react';
 const formatRupiah = (value: string | number) => {
     if (value === null || value === undefined || value === '') return '';
     let str = value.toString().trim();
-    
+
     // Check if it's a raw database decimal string ending with ".00"
     if (str.endsWith('.00') && (str.match(/\./g) || []).length === 1) {
         str = str.slice(0, -3);
     }
-    
+
     const numericValue = str.replace(/[^0-9]/g, '');
     if (!numericValue) return '';
     return new Intl.NumberFormat('id-ID').format(parseInt(numericValue, 10));
@@ -33,26 +33,27 @@ export default function Packages({
 
     const isAgent = userRole === 'agen';
 
-    const { data, setData, post, reset, processing, transform } = useForm({
-        name: '',
-        program_days: '',
-        departure_date: '',
-        airline: '',
-        airline_route: '',
-        price: '',
-        harga_agen: '',
-        hotel_makkah: '',
-        hotel_madinah: '',
-        total_seats: '',
-        free_items: '',
-        includes: '',
-        excludes: '',
-        image: null as File | null,
-        is_active: true,
-        _method: 'post',
-        code: '',
-        is_best_seller: false,
-    });
+    const { data, setData, post, reset, processing, transform, errors } =
+        useForm({
+            name: '',
+            program_days: '',
+            departure_date: '',
+            airline: '',
+            airline_route: '',
+            price: '',
+            harga_agen: '',
+            hotel_makkah: '',
+            hotel_madinah: '',
+            total_seats: '',
+            free_items: '',
+            includes: '',
+            excludes: '',
+            image: null as File | null,
+            is_active: true,
+            _method: 'post',
+            code: '',
+            is_best_seller: false,
+        });
 
     const openAdd = () => {
         setEditingId(null);
@@ -73,7 +74,9 @@ export default function Packages({
             airline: p.airline,
             airline_route: p.airline_route || '',
             price: p.price ? formatRupiah(Math.floor(parseFloat(p.price))) : '',
-            harga_agen: p.harga_agen ? formatRupiah(Math.floor(parseFloat(p.harga_agen))) : '',
+            harga_agen: p.harga_agen
+                ? formatRupiah(Math.floor(parseFloat(p.harga_agen)))
+                : '',
             hotel_makkah: p.hotel_makkah,
             hotel_madinah: p.hotel_madinah,
             total_seats: p.total_seats,
@@ -292,7 +295,10 @@ export default function Packages({
                                         disabled={isAgent}
                                         value={data.airline_route}
                                         onChange={(e) =>
-                                            setData('airline_route', e.target.value)
+                                            setData(
+                                                'airline_route',
+                                                e.target.value,
+                                            )
                                         }
                                         placeholder="Contoh: Surabaya (SUB) - Jeddah (JED)"
                                         className="rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500"
@@ -457,7 +463,7 @@ export default function Packages({
                                     <Input
                                         disabled={isAgent}
                                         type="file"
-                                        accept="image/*"
+                                        accept="image/jpeg,image/png,image/jpg,image/webp"
                                         onChange={(e) =>
                                             setData(
                                                 'image',
@@ -468,6 +474,15 @@ export default function Packages({
                                         }
                                         className="rounded-xl border-slate-300 bg-white focus:border-emerald-500 focus:ring-emerald-500"
                                     />
+                                    {errors.image && (
+                                        <p className="mt-1 text-xs font-semibold text-red-600">
+                                            {errors.image}
+                                        </p>
+                                    )}
+                                    <p className="mt-1 text-xs text-slate-500">
+                                        Format JPG, PNG, atau WebP. Maksimal 2
+                                        MB.
+                                    </p>
                                 </div>
                                 <div className="flex flex-col justify-center space-y-1.5">
                                     <Label className="font-bold text-slate-700">
@@ -627,7 +642,10 @@ export default function Packages({
                                                         {p.program_days} Hari
                                                     </span>
                                                     <span className="rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600">
-                                                        {p.airline} {p.airline_route ? `(${p.airline_route})` : ''}
+                                                        {p.airline}{' '}
+                                                        {p.airline_route
+                                                            ? `(${p.airline_route})`
+                                                            : ''}
                                                     </span>
                                                 </div>
                                                 <div className="mt-2 flex items-center gap-1 text-xs font-medium text-slate-500">

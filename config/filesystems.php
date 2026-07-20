@@ -74,7 +74,8 @@ return [
     */
 
     'links' => [
-        public_path('storage-file') => storage_path('app/public'),
+        // Seluruh isi public project ini berada langsung di root/public_html.
+        base_path('storage-file') => storage_path('app/public'),
     ],
 
 ];

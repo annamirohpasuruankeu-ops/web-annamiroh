@@ -52,7 +52,7 @@ class RecommendationController extends Controller
 
         // Add computed file URL for the React frontend
         $recommendations->getCollection()->transform(function ($rec) {
-            $rec->paspor_file_url = $rec->paspor_file ? asset('storage/' . $rec->paspor_file) : null;
+            $rec->paspor_file_url = $rec->paspor_file ? asset('storage-file/' . $rec->paspor_file) : null;
             return $rec;
         });
 
