@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PublicPackageController;
 
 Route::get('/kategori-program/umroh-reguler', [PublicPackageController::class, 'index'])->name('packages.reguler');
+Route::get('/paket-umroh/{package}', [PublicPackageController::class, 'show'])->name('packages.show');
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 

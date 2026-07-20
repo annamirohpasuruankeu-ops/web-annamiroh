@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Package } from '@/types';
 import { useRef, useState, useEffect } from 'react';
-import { router, usePage } from '@inertiajs/react';
+import { router } from '@inertiajs/react';
 
 interface PackagesProps {
     packages: Package[];
@@ -31,17 +31,11 @@ export default function Packages({ packages }: PackagesProps) {
 
     const processedPackages = rearrangePackages(packages);
 
-    const { auth } = usePage().props as any;
-
     const handleBookNow = (pkg: Package) => {
-        if (pkg.availableSeats === 0) return;
+    if (pkg.availableSeats === 0) return;
 
-        if (!auth?.user) {
-            router.visit(`/login?package_id=${pkg.id}`);
-        } else {
-            router.visit(`/dashboard?book_package_id=${pkg.id}`);
-        }
-    };
+    router.visit(`/paket-umroh/${pkg.id}`);
+};
 
     const checkScroll = () => {
         const el = scrollContainerRef.current;
