@@ -37,19 +37,18 @@ class FortifyServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
 
         Fortify::authenticateUsing(function (Request $request) {
-            $loginInput = $request->email;
-            $cleanInput = preg_replace('/[^0-9]/', '', $loginInput);
+            $loginInput = trim((string) $request->email);
+            $phone = User::normalizePhone($loginInput);
 
-            $user = User::where('email', $loginInput);
+            $query = User::whereRaw('LOWER(email) = ?', [strtolower($loginInput)]);
 
-            if (!empty($cleanInput)) {
-                $user = $user->orWhereHas('profile', function ($q) use ($cleanInput) {
-                    $q->whereRaw("REPLACE(REPLACE(REPLACE(no_wa, ' ', ''), '-', ''), '+', '') = ?", [$cleanInput])
-                      ->orWhereRaw("REPLACE(REPLACE(REPLACE(no_wa, ' ', ''), '-', ''), '+', '') LIKE ?", ['%' . $cleanInput]);
+            if (!str_contains($loginInput, '@') && $phone !== '') {
+                $query->orWhereHas('profile', function ($q) use ($phone) {
+                    $q->where('no_wa', $phone);
                 });
             }
 
-            $user = $user->first();
+            $user = $query->first();
 
             if ($user && \Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
                 if (!$user->is_active) {
@@ -73,8 +72,12 @@ class FortifyServiceProvider extends ServiceProvider
                     if ($role === 'user' && $packageId) {
                         return redirect('/dashboard?book_package_id=' . $packageId);
                     }
+
+                    if ($role === 'agen' && !Auth::user()->password_changed) {
+                        return redirect()->route('password-reminder');
+                    }
                     
-                    $home = in_array($role, ['admin', 'pusat', 'agent']) ? '/admin' : '/dashboard';
+                    $home = in_array($role, ['admin', 'pusat', 'agen']) ? '/admin' : '/dashboard';
                     
                     return redirect()->intended($home);
                 }
@@ -105,7 +108,7 @@ class FortifyServiceProvider extends ServiceProvider
                         return redirect('/dashboard?book_package_id=' . $packageId);
                     }
                     
-                    $home = in_array($role, ['admin', 'pusat', 'agent']) ? '/admin' : '/dashboard';
+                    $home = in_array($role, ['admin', 'pusat', 'agen']) ? '/admin' : '/dashboard';
                     
                     return redirect($home);
                 }

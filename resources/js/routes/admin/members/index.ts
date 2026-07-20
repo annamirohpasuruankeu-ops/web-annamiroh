@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\AdminController::documents
- * @see app/Http/Controllers/AdminController.php:1078
+ * @see app/Http/Controllers/AdminController.php:1194
  * @route '/admin/members/{id}/documents'
  */
 export const documents = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ documents.definition = {
 
 /**
 * @see \App\Http\Controllers\AdminController::documents
- * @see app/Http/Controllers/AdminController.php:1078
+ * @see app/Http/Controllers/AdminController.php:1194
  * @route '/admin/members/{id}/documents'
  */
 documents.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -44,7 +44,7 @@ documents.url = (args: { id: string | number } | [id: string | number ] | string
 
 /**
 * @see \App\Http\Controllers\AdminController::documents
- * @see app/Http/Controllers/AdminController.php:1078
+ * @see app/Http/Controllers/AdminController.php:1194
  * @route '/admin/members/{id}/documents'
  */
 documents.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -54,7 +54,7 @@ documents.post = (args: { id: string | number } | [id: string | number ] | strin
 
     /**
 * @see \App\Http\Controllers\AdminController::documents
- * @see app/Http/Controllers/AdminController.php:1078
+ * @see app/Http/Controllers/AdminController.php:1194
  * @route '/admin/members/{id}/documents'
  */
     const documentsForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -64,7 +64,7 @@ documents.post = (args: { id: string | number } | [id: string | number ] | strin
 
             /**
 * @see \App\Http\Controllers\AdminController::documents
- * @see app/Http/Controllers/AdminController.php:1078
+ * @see app/Http/Controllers/AdminController.php:1194
  * @route '/admin/members/{id}/documents'
  */
         documentsForm.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

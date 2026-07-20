@@ -53,6 +53,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('admin/agents', [App\Http\Controllers\AdminController::class, 'storeAgent'])->name('admin.agents.store');
     Route::put('admin/agents/{id}', [App\Http\Controllers\AdminController::class, 'updateAgent'])->name('admin.agents.update');
     Route::post('admin/agents/import', [App\Http\Controllers\AdminController::class, 'importAgents'])->name('admin.agents.import');
+    Route::get('admin/agents/import-template', [App\Http\Controllers\AdminController::class, 'downloadAgentImportTemplate'])->name('admin.agents.import-template');
 
     Route::get('admin/jamaah', [App\Http\Controllers\AdminController::class, 'jamaah'])->name('admin.jamaah');
     Route::get('admin/jamaah/export', [App\Http\Controllers\AdminController::class, 'exportJamaah'])->name('admin.jamaah.export');

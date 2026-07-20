@@ -1,29 +1,50 @@
 import { Head, useForm, router } from '@inertiajs/react';
-import { PageProps } from '@/types';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useState } from 'react';
 import {
     Users,
     UserPlus,
     Edit3,
     X,
     Search,
-    ShieldCheck,
-    ShieldOff,
     FileSpreadsheet,
     Upload,
+    Download,
 } from 'lucide-react';
+import { useState } from 'react';
 import Pagination from '@/components/pagination';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import type { PageProps } from '@/types';
+
+type ImportDetail = {
+    row: number;
+    code: string;
+    name: string;
+    phone: string;
+    status: 'created' | 'updated' | 'duplicate' | 'conflict' | 'invalid';
+    message: string;
+};
+
+type ImportResult = {
+    summary: Record<
+        'total' | 'created' | 'updated' | 'duplicate' | 'conflict' | 'invalid',
+        number
+    >;
+    details: ImportDetail[];
+};
 
 export default function Agents({
     agents,
     filters,
-}: PageProps<{ agents: any; filters?: any }>) {
+    importResult,
+}: PageProps<{
+    agents: any;
+    filters?: any;
+    importResult?: ImportResult | null;
+}>) {
     const [search, setSearch] = useState(filters?.search || '');
     const [showModal, setShowModal] = useState(false);
-    const [showImportModal, setShowImportModal] = useState(false);
+    const [showImportModal, setShowImportModal] = useState(Boolean(importResult));
     const [editingId, setEditingId] = useState<number | null>(null);
 
     const { data, setData, post, put, reset, processing, errors } = useForm({
@@ -32,7 +53,6 @@ export default function Agents({
         password: '',
         no_wa: '',
         alamat: '',
-        agent_code: '',
     });
 
     const {
@@ -60,13 +80,13 @@ export default function Agents({
             password: '',
             no_wa: agent.profile?.no_wa || '',
             alamat: agent.profile?.alamat || '',
-            agent_code: agent.agent_code || '',
         });
         setShowModal(true);
     };
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
+
         if (editingId) {
             put(`/admin/agents/${editingId}`, {
                 onSuccess: () => setShowModal(false),
@@ -80,10 +100,46 @@ export default function Agents({
         e.preventDefault();
         postImport('/admin/agents/import', {
             onSuccess: () => {
-                setShowImportModal(false);
                 resetImport();
             },
         });
+    };
+
+    const downloadImportReport = () => {
+        if (!importResult) {
+return;
+}
+
+        const escape = (value: string | number) =>
+            `"${String(value).replace(/"/g, '""')}"`;
+        const rows = [
+            [
+                'BARIS',
+                'KODE_AGEN',
+                'NAMA_AGEN',
+                'NO_HP',
+                'STATUS',
+                'KETERANGAN',
+            ],
+            ...importResult.details.map((item) => [
+                item.row,
+                item.code,
+                item.name,
+                item.phone,
+                item.status,
+                item.message,
+            ]),
+        ];
+        const csv =
+            '\uFEFF' + rows.map((row) => row.map(escape).join(';')).join('\n');
+        const url = URL.createObjectURL(
+            new Blob([csv], { type: 'text/csv;charset=utf-8' }),
+        );
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = `laporan_import_agen_${new Date().toISOString().slice(0, 10)}.csv`;
+        anchor.click();
+        URL.revokeObjectURL(url);
     };
 
     const toggleStatus = (id: number) => {
@@ -187,22 +243,14 @@ export default function Agents({
                                     <Label className="font-bold text-slate-700">
                                         ID Agen / Kode
                                     </Label>
-                                    <Input
-                                        value={data.agent_code}
-                                        onChange={(e) =>
-                                            setData(
-                                                'agent_code',
-                                                e.target.value,
-                                            )
-                                        }
-                                        placeholder="Contoh: A001"
-                                        className="rounded-xl border-slate-300 focus:border-emerald-500 focus:ring-emerald-500"
-                                    />
-                                    {errors.agent_code && (
-                                        <p className="mt-1 text-xs text-red-500">
-                                            {errors.agent_code}
-                                        </p>
-                                    )}
+                                    <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-bold text-amber-800">
+                                        {editingId
+                                            ? agents.data.find(
+                                                  (agent: any) =>
+                                                      agent.id === editingId,
+                                              )?.agent_code || '-'
+                                            : 'Dibuat otomatis dengan format m001, m002, dan seterusnya'}
+                                    </div>
                                 </div>
                                 <div className="space-y-1.5">
                                     <Label className="font-bold text-slate-700">
@@ -335,7 +383,9 @@ export default function Agents({
 
             {showImportModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
-                    <div className="flex max-h-[90vh] w-full max-w-lg animate-in flex-col overflow-hidden rounded-3xl bg-white p-0 shadow-2xl duration-200 zoom-in-95">
+                    <div
+                        className={`flex max-h-[90vh] w-full ${importResult ? 'max-w-4xl' : 'max-w-lg'} animate-in flex-col overflow-hidden rounded-3xl bg-white p-0 shadow-2xl duration-200 zoom-in-95`}
+                    >
                         <div className="relative flex items-center justify-between overflow-hidden bg-emerald-900 p-6 text-white">
                             <div className="absolute top-0 right-0 h-32 w-32 translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-500 opacity-20 blur-2xl"></div>
                             <h2 className="relative z-10 flex items-center gap-2 text-xl font-bold">
@@ -358,9 +408,17 @@ export default function Agents({
                             className="flex-1 space-y-6 overflow-y-auto p-6 md:p-8"
                         >
                             <div className="space-y-2 rounded-xl border border-amber-200 bg-amber-50 p-4">
-                                <h4 className="text-sm font-bold text-amber-900">
-                                    Format Excel yang Diterima:
-                                </h4>
+                                <div className="flex items-center justify-between gap-3">
+                                    <h4 className="text-sm font-bold text-amber-900">
+                                        Format Excel yang Diterima:
+                                    </h4>
+                                    <a
+                                        href="/admin/agents/import-template"
+                                        className="inline-flex items-center gap-1.5 rounded-lg bg-amber-200 px-3 py-1.5 text-[10px] font-extrabold text-amber-950 hover:bg-amber-300"
+                                    >
+                                        <Download size={13} /> Download Template
+                                    </a>
+                                </div>
                                 <p className="text-xs leading-relaxed text-amber-800">
                                     Unggah file Excel (<code>.xlsx</code>,{' '}
                                     <code>.xls</code>, atau <code>.csv</code>)
@@ -387,7 +445,7 @@ export default function Agents({
                                         <tbody>
                                             <tr>
                                                 <td className="border border-amber-200 px-2 py-1">
-                                                    A001
+                                                    a001 / kosong
                                                 </td>
                                                 <td className="border border-amber-200 px-2 py-1 font-semibold">
                                                     Adam Jember
@@ -396,16 +454,16 @@ export default function Agents({
                                                     bunut
                                                 </td>
                                                 <td className="border border-amber-200 px-2 py-1">
-                                                    6285790721167
+                                                    081252777871
                                                 </td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
                                 <p className="mt-2 text-[10px] leading-relaxed text-amber-700 italic">
-                                    * Agen akan otomatis dapat login menggunakan
-                                    **No HP** sebagai username & password
-                                    default.
+                                    * Kode kosong dibuat otomatis. Email menjadi
+                                    kode@annamiroh.com dan No HP digunakan
+                                    sebagai password awal.
                                 </p>
                             </div>
 
@@ -447,6 +505,114 @@ export default function Agents({
                                     </p>
                                 )}
                             </div>
+
+                            {importResult && (
+                                <div className="space-y-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                                    <div className="flex items-center justify-between gap-3">
+                                        <h4 className="text-sm font-extrabold text-slate-800">
+                                            Hasil Import Terakhir
+                                        </h4>
+                                        <button
+                                            type="button"
+                                            onClick={downloadImportReport}
+                                            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-700 px-3 py-2 text-[10px] font-bold text-white hover:bg-emerald-800"
+                                        >
+                                            <Download size={13} /> Download
+                                            Laporan
+                                        </button>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-2 text-[10px] sm:grid-cols-3">
+                                        {[
+                                            [
+                                                'Baru',
+                                                importResult.summary.created,
+                                                'bg-emerald-100 text-emerald-800',
+                                            ],
+                                            [
+                                                'Diperbarui',
+                                                importResult.summary.updated,
+                                                'bg-blue-100 text-blue-800',
+                                            ],
+                                            [
+                                                'Duplikat',
+                                                importResult.summary.duplicate,
+                                                'bg-slate-200 text-slate-700',
+                                            ],
+                                            [
+                                                'Konflik',
+                                                importResult.summary.conflict,
+                                                'bg-amber-100 text-amber-800',
+                                            ],
+                                            [
+                                                'Tidak valid',
+                                                importResult.summary.invalid,
+                                                'bg-rose-100 text-rose-800',
+                                            ],
+                                        ].map(([label, value, color]) => (
+                                            <div
+                                                key={String(label)}
+                                                className={`rounded-lg px-3 py-2 ${color}`}
+                                            >
+                                                <span className="font-bold">
+                                                    {label}
+                                                </span>
+                                                <span className="float-right text-sm font-black">
+                                                    {value}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="max-h-56 overflow-auto rounded-xl border border-slate-200 bg-white">
+                                        <table className="w-full text-left text-[10px]">
+                                            <thead className="sticky top-0 bg-slate-100 text-slate-600">
+                                                <tr>
+                                                    <th className="px-3 py-2">
+                                                        Baris
+                                                    </th>
+                                                    <th className="px-3 py-2">
+                                                        Kode/Nama
+                                                    </th>
+                                                    <th className="px-3 py-2">
+                                                        Status
+                                                    </th>
+                                                    <th className="px-3 py-2">
+                                                        Keterangan
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-100">
+                                                {importResult.details.map(
+                                                    (item) => (
+                                                        <tr
+                                                            key={`${item.row}-${item.code}`}
+                                                        >
+                                                            <td className="px-3 py-2 font-bold">
+                                                                {item.row}
+                                                            </td>
+                                                            <td className="px-3 py-2">
+                                                                <div className="font-bold">
+                                                                    {item.code}
+                                                                </div>
+                                                                <div className="text-slate-500">
+                                                                    {item.name}
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-3 py-2 font-bold uppercase">
+                                                                {item.status}
+                                                            </td>
+                                                            <td className="max-w-[220px] px-3 py-2 whitespace-normal text-slate-600">
+                                                                {item.message}
+                                                            </td>
+                                                        </tr>
+                                                    ),
+                                                )}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="flex justify-end gap-3 border-t border-slate-100 pt-6">
                                 <Button

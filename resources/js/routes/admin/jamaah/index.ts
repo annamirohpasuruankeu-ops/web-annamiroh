@@ -80,7 +80,7 @@ exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     exportMethod.form = exportMethodForm
 /**
 * @see \App\Http\Controllers\AdminController::importMethod
- * @see app/Http/Controllers/AdminController.php:2075
+ * @see app/Http/Controllers/AdminController.php:2191
  * @route '/admin/jamaah/import'
  */
 export const importMethod = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -95,7 +95,7 @@ importMethod.definition = {
 
 /**
 * @see \App\Http\Controllers\AdminController::importMethod
- * @see app/Http/Controllers/AdminController.php:2075
+ * @see app/Http/Controllers/AdminController.php:2191
  * @route '/admin/jamaah/import'
  */
 importMethod.url = (options?: RouteQueryOptions) => {
@@ -104,7 +104,7 @@ importMethod.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\AdminController::importMethod
- * @see app/Http/Controllers/AdminController.php:2075
+ * @see app/Http/Controllers/AdminController.php:2191
  * @route '/admin/jamaah/import'
  */
 importMethod.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -114,7 +114,7 @@ importMethod.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\AdminController::importMethod
- * @see app/Http/Controllers/AdminController.php:2075
+ * @see app/Http/Controllers/AdminController.php:2191
  * @route '/admin/jamaah/import'
  */
     const importMethodForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -124,7 +124,7 @@ importMethod.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\AdminController::importMethod
- * @see app/Http/Controllers/AdminController.php:2075
+ * @see app/Http/Controllers/AdminController.php:2191
  * @route '/admin/jamaah/import'
  */
         importMethodForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -232,7 +232,7 @@ members.head = (args: { id: string | number } | [id: string | number ] | string 
     members.form = membersForm
 /**
 * @see \App\Http\Controllers\AdminController::store
- * @see app/Http/Controllers/AdminController.php:898
+ * @see app/Http/Controllers/AdminController.php:1014
  * @route '/admin/jamaah'
  */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -247,7 +247,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\AdminController::store
- * @see app/Http/Controllers/AdminController.php:898
+ * @see app/Http/Controllers/AdminController.php:1014
  * @route '/admin/jamaah'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -256,7 +256,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\AdminController::store
- * @see app/Http/Controllers/AdminController.php:898
+ * @see app/Http/Controllers/AdminController.php:1014
  * @route '/admin/jamaah'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -266,7 +266,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\AdminController::store
- * @see app/Http/Controllers/AdminController.php:898
+ * @see app/Http/Controllers/AdminController.php:1014
  * @route '/admin/jamaah'
  */
     const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -276,7 +276,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\AdminController::store
- * @see app/Http/Controllers/AdminController.php:898
+ * @see app/Http/Controllers/AdminController.php:1014
  * @route '/admin/jamaah'
  */
         storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -287,7 +287,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     store.form = storeForm
 /**
 * @see \App\Http\Controllers\AdminController::update
- * @see app/Http/Controllers/AdminController.php:977
+ * @see app/Http/Controllers/AdminController.php:1093
  * @route '/admin/jamaah/{id}'
  */
 export const update = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -302,7 +302,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\AdminController::update
- * @see app/Http/Controllers/AdminController.php:977
+ * @see app/Http/Controllers/AdminController.php:1093
  * @route '/admin/jamaah/{id}'
  */
 update.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -330,7 +330,7 @@ update.url = (args: { id: string | number } | [id: string | number ] | string | 
 
 /**
 * @see \App\Http\Controllers\AdminController::update
- * @see app/Http/Controllers/AdminController.php:977
+ * @see app/Http/Controllers/AdminController.php:1093
  * @route '/admin/jamaah/{id}'
  */
 update.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -340,7 +340,7 @@ update.post = (args: { id: string | number } | [id: string | number ] | string |
 
     /**
 * @see \App\Http\Controllers\AdminController::update
- * @see app/Http/Controllers/AdminController.php:977
+ * @see app/Http/Controllers/AdminController.php:1093
  * @route '/admin/jamaah/{id}'
  */
     const updateForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -350,7 +350,7 @@ update.post = (args: { id: string | number } | [id: string | number ] | string |
 
             /**
 * @see \App\Http\Controllers\AdminController::update
- * @see app/Http/Controllers/AdminController.php:977
+ * @see app/Http/Controllers/AdminController.php:1093
  * @route '/admin/jamaah/{id}'
  */
         updateForm.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

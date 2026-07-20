@@ -1,5 +1,148 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../wayfinder'
 /**
+* @see \App\Http\Controllers\Settings\SecurityController::passwordReminder
+ * @see app/Http/Controllers/Settings/SecurityController.php:68
+ * @route '/password-reminder'
+ */
+export const passwordReminder = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: passwordReminder.url(options),
+    method: 'get',
+})
+
+passwordReminder.definition = {
+    methods: ["get","head"],
+    url: '/password-reminder',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\Settings\SecurityController::passwordReminder
+ * @see app/Http/Controllers/Settings/SecurityController.php:68
+ * @route '/password-reminder'
+ */
+passwordReminder.url = (options?: RouteQueryOptions) => {
+    return passwordReminder.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Settings\SecurityController::passwordReminder
+ * @see app/Http/Controllers/Settings/SecurityController.php:68
+ * @route '/password-reminder'
+ */
+passwordReminder.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: passwordReminder.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\Settings\SecurityController::passwordReminder
+ * @see app/Http/Controllers/Settings/SecurityController.php:68
+ * @route '/password-reminder'
+ */
+passwordReminder.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: passwordReminder.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\Settings\SecurityController::passwordReminder
+ * @see app/Http/Controllers/Settings/SecurityController.php:68
+ * @route '/password-reminder'
+ */
+    const passwordReminderForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: passwordReminder.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\Settings\SecurityController::passwordReminder
+ * @see app/Http/Controllers/Settings/SecurityController.php:68
+ * @route '/password-reminder'
+ */
+        passwordReminderForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: passwordReminder.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\Settings\SecurityController::passwordReminder
+ * @see app/Http/Controllers/Settings/SecurityController.php:68
+ * @route '/password-reminder'
+ */
+        passwordReminderForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: passwordReminder.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    passwordReminder.form = passwordReminderForm
+/**
+* @see \App\Http\Controllers\Settings\SecurityController::updateInitialPassword
+ * @see app/Http/Controllers/Settings/SecurityController.php:77
+ * @route '/password-reminder'
+ */
+export const updateInitialPassword = (options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+    url: updateInitialPassword.url(options),
+    method: 'put',
+})
+
+updateInitialPassword.definition = {
+    methods: ["put"],
+    url: '/password-reminder',
+} satisfies RouteDefinition<["put"]>
+
+/**
+* @see \App\Http\Controllers\Settings\SecurityController::updateInitialPassword
+ * @see app/Http/Controllers/Settings/SecurityController.php:77
+ * @route '/password-reminder'
+ */
+updateInitialPassword.url = (options?: RouteQueryOptions) => {
+    return updateInitialPassword.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Settings\SecurityController::updateInitialPassword
+ * @see app/Http/Controllers/Settings/SecurityController.php:77
+ * @route '/password-reminder'
+ */
+updateInitialPassword.put = (options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+    url: updateInitialPassword.url(options),
+    method: 'put',
+})
+
+    /**
+* @see \App\Http\Controllers\Settings\SecurityController::updateInitialPassword
+ * @see app/Http/Controllers/Settings/SecurityController.php:77
+ * @route '/password-reminder'
+ */
+    const updateInitialPasswordForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        action: updateInitialPassword.url({
+                    [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                        _method: 'PUT',
+                        ...(options?.query ?? options?.mergeQuery ?? {}),
+                    }
+                }),
+        method: 'post',
+    })
+
+            /**
+* @see \App\Http\Controllers\Settings\SecurityController::updateInitialPassword
+ * @see app/Http/Controllers/Settings/SecurityController.php:77
+ * @route '/password-reminder'
+ */
+        updateInitialPasswordForm.put = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+            action: updateInitialPassword.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'PUT',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'post',
+        })
+    
+    updateInitialPassword.form = updateInitialPasswordForm
+/**
 * @see \App\Http\Controllers\Settings\SecurityController::edit
  * @see app/Http/Controllers/Settings/SecurityController.php:19
  * @route '/settings/security'
@@ -142,6 +285,6 @@ update.put = (options?: RouteQueryOptions): RouteDefinition<'put'> => ({
         })
     
     update.form = updateForm
-const SecurityController = { edit, update }
+const SecurityController = { passwordReminder, updateInitialPassword, edit, update }
 
 export default SecurityController

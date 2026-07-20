@@ -641,7 +641,8 @@ xmlns="http://www.w3.org/TR/REC-html40">
 
         return Inertia::render('admin/agents', [
             'agents' => $query->paginate(10)->withQueryString(),
-            'filters' => ['search' => $search]
+            'filters' => ['search' => $search],
+            'importResult' => $request->session()->get('agentImportResult'),
         ]);
     }
 
@@ -655,23 +656,31 @@ xmlns="http://www.w3.org/TR/REC-html40">
             'password' => 'required|string|min:8',
             'no_wa' => 'required|string',
             'alamat' => 'required|string',
-            'agent_code' => 'nullable|string',
         ]);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
-            'role' => 'agen',
-            'agent_code' => $validated['agent_code'] ?? null,
-        ]);
+        $phone = User::normalizePhone($validated['no_wa']);
+        if (User::whereHas('profile', fn ($q) => $q->where('no_wa', $phone))->exists()) {
+            return back()->withErrors(['no_wa' => 'Nomor WhatsApp sudah digunakan akun lain.'])->withInput();
+        }
 
-        $user->profile()->create([
-            'no_wa' => $validated['no_wa'],
-            'alamat' => $validated['alamat'],
-        ]);
+        \Illuminate\Support\Facades\DB::transaction(function () use ($validated, $phone) {
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => strtolower($validated['email']),
+                'password' => $validated['password'],
+                'role' => 'agen',
+                'agent_code' => User::nextAgentCode('m'),
+                'is_active' => true,
+                'password_changed' => false,
+            ]);
 
-        return back()->with('success', 'Agen berhasil ditambahkan.');
+            $user->profile()->create([
+                'no_wa' => $phone,
+                'alamat' => $validated['alamat'],
+            ]);
+        });
+
+        return back()->with('success', 'Agen berhasil ditambahkan dengan kode manual otomatis.');
     }
 
     public function importAgents(Request $request)
@@ -680,91 +689,191 @@ xmlns="http://www.w3.org/TR/REC-html40">
             abort(403);
 
         $request->validate([
-            'file' => 'required|file|mimes:xlsx,xls,csv'
+            'file' => 'required|file|mimes:xlsx,xls,csv|max:10240'
         ]);
 
-        $file = $request->file('file');
-        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file->getRealPath());
-        $sheet = $spreadsheet->getActiveSheet();
-        $highestRow = $sheet->getHighestRow();
-
-        $imported = 0;
-        $skipped = 0;
-
-        for ($rowNum = 2; $rowNum <= $highestRow; $rowNum++) {
-            $idAgen = trim($sheet->getCell("A{$rowNum}")->getFormattedValue());
-            $namaAgen = trim($sheet->getCell("B{$rowNum}")->getFormattedValue());
-            $alamat = trim($sheet->getCell("C{$rowNum}")->getFormattedValue());
-            $noHpRaw = trim($sheet->getCell("D{$rowNum}")->getFormattedValue());
-
-            if (empty($namaAgen)) {
-                $skipped++;
-                continue;
-            }
-
-            // Normalize phone number (strip non-digits)
-            $noHp = preg_replace('/[^0-9]/', '', $noHpRaw);
-
-            // Normalize Indonesian mobile number prefix (strip country code prefix or replace 8xxx with 08xxx)
-            if (strlen($noHp) >= 9 && strlen($noHp) <= 13) {
-                if (str_starts_with($noHp, '8')) {
-                    $noHp = '0' . $noHp;
-                } elseif (str_starts_with($noHp, '628')) {
-                    $noHp = '0' . substr($noHp, 2);
-                }
-            }
-
-            if (empty($noHp)) {
-                $skipped++;
-                continue;
-            }
-
-            // Generate email based on ID_AGEN or phone number
-            $email = strtolower($idAgen ?: $noHp) . '@annamirah.com';
-
-            // Check if email already exists, or user with this no_wa already exists
-            $existingUser = User::where('email', $email)
-                ->orWhereHas('profile', function ($q) use ($noHp) {
-                    $q->where('no_wa', $noHp);
-                })
-                ->first();
-
-            if ($existingUser) {
-                $existingUser->update([
-                    'name' => $namaAgen,
-                    'agent_code' => $idAgen ?: $existingUser->agent_code,
-                ]);
-                $existingUser->profile()->updateOrCreate(
-                    ['user_id' => $existingUser->id],
-                    [
-                        'no_wa' => $noHp,
-                        'alamat' => $alamat
-                    ]
-                );
-                $imported++;
-                continue;
-            }
-
-            // Create new agent user
-            // Set password to the bcrypt hash of NO_HP (which they will use to login)
-            $user = User::create([
-                'name' => $namaAgen,
-                'email' => $email,
-                'password' => \Illuminate\Support\Facades\Hash::make($noHp),
-                'role' => 'agen',
-                'agent_code' => $idAgen,
-                'is_active' => true,
-            ]);
-
-            $user->profile()->create([
-                'no_wa' => $noHp,
-                'alamat' => $alamat,
-            ]);
-
-            $imported++;
+        try {
+            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($request->file('file')->getRealPath());
+            $rows = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
+        } catch (\Throwable $e) {
+            return back()->withErrors(['file' => 'File tidak dapat dibaca: '.$e->getMessage()]);
         }
 
-        return back()->with('success', "Berhasil mengimpor {$imported} agen. {$skipped} baris dilewati.");
+        $aliases = [
+            'code' => ['kode_agen', 'id_agen', 'kode', 'agent_code'],
+            'name' => ['nama_agen', 'nama', 'name'],
+            'address' => ['alamat', 'address'],
+            'phone' => ['no_hp', 'nomor_hp', 'no_wa', 'nomor_wa', 'telepon', 'phone'],
+        ];
+        $headers = [];
+        $headerRow = null;
+
+        foreach ($rows as $rowNumber => $row) {
+            foreach ($row as $column => $value) {
+                $clean = preg_replace('/[^a-z0-9]+/', '_', strtolower(trim((string) $value)));
+                $clean = trim((string) $clean, '_');
+                foreach ($aliases as $field => $names) {
+                    if (in_array($clean, $names, true)) {
+                        $headers[$field] = $column;
+                    }
+                }
+            }
+            if (isset($headers['name'], $headers['phone'])) {
+                $headerRow = $rowNumber;
+                break;
+            }
+        }
+
+        if (!$headerRow) {
+            return back()->withErrors([
+                'file' => 'Header tidak sesuai. File minimal harus memiliki kolom NAMA_AGEN dan NO_HP.',
+            ]);
+        }
+
+        $summary = ['total' => 0, 'created' => 0, 'updated' => 0, 'duplicate' => 0, 'conflict' => 0, 'invalid' => 0];
+        $details = [];
+
+        foreach ($rows as $rowNumber => $row) {
+            if ($rowNumber <= $headerRow) {
+                continue;
+            }
+
+            $rawCode = isset($headers['code']) ? strtolower(trim((string) ($row[$headers['code']] ?? ''))) : '';
+            $name = isset($headers['name']) ? trim((string) ($row[$headers['name']] ?? '')) : '';
+            $address = isset($headers['address']) ? trim((string) ($row[$headers['address']] ?? '')) : '';
+            $phone = isset($headers['phone']) ? User::normalizePhone((string) ($row[$headers['phone']] ?? '')) : '';
+
+            if ($rawCode === '' && $name === '' && $address === '' && $phone === '') {
+                continue;
+            }
+
+            $summary['total']++;
+            $detail = ['row' => $rowNumber, 'code' => $rawCode ?: '-', 'name' => $name ?: '-', 'phone' => $phone ?: '-', 'status' => '', 'message' => ''];
+
+            if ($name === '' || $phone === '') {
+                $detail['status'] = 'invalid';
+                $detail['message'] = $name === '' ? 'Nama agen wajib diisi.' : 'Nomor HP wajib diisi.';
+                $summary['invalid']++;
+                $details[] = $detail;
+                continue;
+            }
+
+            if ($rawCode !== '' && !preg_match('/^a\d{3,}$/', $rawCode)) {
+                $detail['status'] = 'invalid';
+                $detail['message'] = 'Kode impor harus menggunakan format a001, a002, dan seterusnya.';
+                $summary['invalid']++;
+                $details[] = $detail;
+                continue;
+            }
+
+            try {
+                \Illuminate\Support\Facades\DB::transaction(function () use (&$summary, &$details, &$detail, $rawCode, $name, $address, $phone) {
+                    $byCode = $rawCode !== ''
+                        ? User::with('profile')->where('role', 'agen')->where('agent_code', $rawCode)->lockForUpdate()->first()
+                        : null;
+                    $byPhone = User::with('profile')->whereHas('profile', fn ($q) => $q->where('no_wa', $phone))->lockForUpdate()->first();
+
+                    if ($byCode && (!$byPhone || $byPhone->id !== $byCode->id)) {
+                        $detail['status'] = 'conflict';
+                        $detail['message'] = "Kode {$rawCode} sudah digunakan oleh {$byCode->name} dengan nomor HP berbeda.";
+                        $summary['conflict']++;
+                        $details[] = $detail;
+                        return;
+                    }
+
+                    if ($byPhone && (!$byCode || $byCode->id !== $byPhone->id)) {
+                        $detail['status'] = 'conflict';
+                        $detail['message'] = "Nomor HP sudah digunakan oleh {$byPhone->name}".($byPhone->agent_code ? " ({$byPhone->agent_code})" : '').'.';
+                        $summary['conflict']++;
+                        $details[] = $detail;
+                        return;
+                    }
+
+                    if ($byCode && $byPhone && $byCode->id === $byPhone->id) {
+                        $sameName = trim($byCode->name) === $name;
+                        $sameAddress = trim((string) $byCode->profile?->alamat) === $address;
+
+                        if ($sameName && $sameAddress) {
+                            $detail['status'] = 'duplicate';
+                            $detail['message'] = 'Seluruh data sudah sama; baris dilewati.';
+                            $summary['duplicate']++;
+                        } else {
+                            $byCode->update(['name' => $name]);
+                            $byCode->profile()->updateOrCreate(
+                                ['user_id' => $byCode->id],
+                                ['no_wa' => $phone, 'alamat' => $address]
+                            );
+                            $detail['status'] = 'updated';
+                            $detail['message'] = 'Nama/alamat diperbarui; password lama dipertahankan.';
+                            $summary['updated']++;
+                        }
+                        $details[] = $detail;
+                        return;
+                    }
+
+                    $code = $rawCode ?: User::nextAgentCode('a');
+                    $email = $code.'@annamiroh.com';
+                    if (User::where('email', $email)->exists()) {
+                        $detail['status'] = 'conflict';
+                        $detail['message'] = "Email otomatis {$email} sudah digunakan akun lain.";
+                        $summary['conflict']++;
+                        $details[] = $detail;
+                        return;
+                    }
+
+                    $user = User::create([
+                        'name' => $name,
+                        'email' => $email,
+                        'password' => $phone,
+                        'role' => 'agen',
+                        'agent_code' => $code,
+                        'is_active' => true,
+                        'password_changed' => false,
+                    ]);
+                    $user->profile()->create(['no_wa' => $phone, 'alamat' => $address]);
+
+                    $detail['code'] = $code;
+                    $detail['status'] = 'created';
+                    $detail['message'] = 'Agen baru berhasil dibuat; password awal menggunakan nomor HP.';
+                    $summary['created']++;
+                    $details[] = $detail;
+                });
+            } catch (\Throwable $e) {
+                $detail['status'] = 'invalid';
+                $detail['message'] = 'Gagal diproses: '.$e->getMessage();
+                $summary['invalid']++;
+                $details[] = $detail;
+            }
+        }
+
+        $result = ['summary' => $summary, 'details' => $details];
+        $message = "Import selesai: {$summary['created']} baru, {$summary['updated']} diperbarui, {$summary['duplicate']} duplikat, {$summary['conflict']} konflik, {$summary['invalid']} tidak valid.";
+
+        return back()->with('success', $message)->with('agentImportResult', $result);
+    }
+
+    public function downloadAgentImportTemplate()
+    {
+        abort_unless(request()->user()->role === 'admin', 403);
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Template Agen');
+        $sheet->fromArray([
+            ['KODE_AGEN', 'NAMA_AGEN', 'ALAMAT', 'NO_HP'],
+            ['', 'Contoh Agen Pasuruan', 'Pasuruan', '081234567890'],
+        ]);
+        $sheet->getStyle('A1:D1')->getFont()->setBold(true);
+        $sheet->getStyle('D2:D1000')->getNumberFormat()->setFormatCode('@');
+        foreach (range('A', 'D') as $column) {
+            $sheet->getColumnDimension($column)->setAutoSize(true);
+        }
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $temporary = tempnam(sys_get_temp_dir(), 'template-agen-');
+        $writer->save($temporary);
+
+        return response()->download($temporary, 'template_import_agen.xlsx')->deleteFileAfterSend(true);
     }
 
     public function updateAgent(Request $request, $id)
@@ -778,17 +887,24 @@ xmlns="http://www.w3.org/TR/REC-html40">
             'password' => 'nullable|string|min:8',
             'no_wa' => 'required|string',
             'alamat' => 'required|string',
-            'agent_code' => 'nullable|string',
         ]);
+
+        $phone = User::normalizePhone($validated['no_wa']);
+        $phoneUsed = User::where('id', '!=', $agent->id)
+            ->whereHas('profile', fn ($q) => $q->where('no_wa', $phone))
+            ->exists();
+        if ($phoneUsed) {
+            return back()->withErrors(['no_wa' => 'Nomor WhatsApp sudah digunakan akun lain.'])->withInput();
+        }
 
         $data = [
             'name' => $validated['name'],
-            'email' => $validated['email'],
-            'agent_code' => $validated['agent_code'] ?? null,
+            'email' => strtolower($validated['email']),
         ];
 
         if (!empty($validated['password'])) {
             $data['password'] = \Illuminate\Support\Facades\Hash::make($validated['password']);
+            $data['password_changed'] = false;
         }
 
         $agent->update($data);
@@ -796,7 +912,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
         $agent->profile()->updateOrCreate(
             ['user_id' => $agent->id],
             [
-                'no_wa' => $validated['no_wa'],
+                'no_wa' => $phone,
                 'alamat' => $validated['alamat']
             ]
         );
@@ -2323,4 +2439,3 @@ xmlns="http://www.w3.org/TR/REC-html40">
         }
     }
 }
-

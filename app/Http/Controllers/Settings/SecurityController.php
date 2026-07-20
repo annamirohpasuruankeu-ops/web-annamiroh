@@ -57,10 +57,34 @@ class SecurityController extends Controller
     {
         $request->user()->update([
             'password' => $request->password,
+            'password_changed' => true,
         ]);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Password updated.')]);
 
         return back();
+    }
+
+    public function passwordReminder(): Response
+    {
+        abort_unless(auth()->user()?->role === 'agen', 403);
+
+        return Inertia::render('auth/password-reminder', [
+            'passwordRules' => Password::defaults()->toPasswordRulesString(),
+        ]);
+    }
+
+    public function updateInitialPassword(PasswordUpdateRequest $request): RedirectResponse
+    {
+        abort_unless($request->user()->role === 'agen', 403);
+
+        $request->user()->update([
+            'password' => $request->password,
+            'password_changed' => true,
+        ]);
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Password berhasil diperbarui.']);
+
+        return redirect('/admin');
     }
 }

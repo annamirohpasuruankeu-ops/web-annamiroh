@@ -93,7 +93,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\AdminController::orders
- * @see app/Http/Controllers/AdminController.php:1567
+ * @see app/Http/Controllers/AdminController.php:1683
  * @route '/admin/orders'
  */
 export const orders = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -108,7 +108,7 @@ orders.definition = {
 
 /**
 * @see \App\Http\Controllers\AdminController::orders
- * @see app/Http/Controllers/AdminController.php:1567
+ * @see app/Http/Controllers/AdminController.php:1683
  * @route '/admin/orders'
  */
 orders.url = (options?: RouteQueryOptions) => {
@@ -117,7 +117,7 @@ orders.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\AdminController::orders
- * @see app/Http/Controllers/AdminController.php:1567
+ * @see app/Http/Controllers/AdminController.php:1683
  * @route '/admin/orders'
  */
 orders.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -126,7 +126,7 @@ orders.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\AdminController::orders
- * @see app/Http/Controllers/AdminController.php:1567
+ * @see app/Http/Controllers/AdminController.php:1683
  * @route '/admin/orders'
  */
 orders.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -136,7 +136,7 @@ orders.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\AdminController::orders
- * @see app/Http/Controllers/AdminController.php:1567
+ * @see app/Http/Controllers/AdminController.php:1683
  * @route '/admin/orders'
  */
     const ordersForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -146,7 +146,7 @@ orders.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\AdminController::orders
- * @see app/Http/Controllers/AdminController.php:1567
+ * @see app/Http/Controllers/AdminController.php:1683
  * @route '/admin/orders'
  */
         ordersForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -155,7 +155,7 @@ orders.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\AdminController::orders
- * @see app/Http/Controllers/AdminController.php:1567
+ * @see app/Http/Controllers/AdminController.php:1683
  * @route '/admin/orders'
  */
         ordersForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -616,7 +616,7 @@ assign.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     assign.form = assignForm
 /**
 * @see \App\Http\Controllers\AdminController::remove
- * @see app/Http/Controllers/AdminController.php:807
+ * @see app/Http/Controllers/AdminController.php:923
  * @route '/admin/remove-jamaah/{id}'
  */
 export const remove = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -631,7 +631,7 @@ remove.definition = {
 
 /**
 * @see \App\Http\Controllers\AdminController::remove
- * @see app/Http/Controllers/AdminController.php:807
+ * @see app/Http/Controllers/AdminController.php:923
  * @route '/admin/remove-jamaah/{id}'
  */
 remove.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -659,7 +659,7 @@ remove.url = (args: { id: string | number } | [id: string | number ] | string | 
 
 /**
 * @see \App\Http\Controllers\AdminController::remove
- * @see app/Http/Controllers/AdminController.php:807
+ * @see app/Http/Controllers/AdminController.php:923
  * @route '/admin/remove-jamaah/{id}'
  */
 remove.delete = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -669,7 +669,7 @@ remove.delete = (args: { id: string | number } | [id: string | number ] | string
 
     /**
 * @see \App\Http\Controllers\AdminController::remove
- * @see app/Http/Controllers/AdminController.php:807
+ * @see app/Http/Controllers/AdminController.php:923
  * @route '/admin/remove-jamaah/{id}'
  */
     const removeForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -684,7 +684,7 @@ remove.delete = (args: { id: string | number } | [id: string | number ] | string
 
             /**
 * @see \App\Http\Controllers\AdminController::remove
- * @see app/Http/Controllers/AdminController.php:807
+ * @see app/Http/Controllers/AdminController.php:923
  * @route '/admin/remove-jamaah/{id}'
  */
         removeForm.delete = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -700,7 +700,7 @@ remove.delete = (args: { id: string | number } | [id: string | number ] | string
     remove.form = removeForm
 /**
 * @see \App\Http\Controllers\AdminController::popupPromos
- * @see app/Http/Controllers/AdminController.php:1189
+ * @see app/Http/Controllers/AdminController.php:1305
  * @route '/admin/popup-promos'
  */
 export const popupPromos = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -715,7 +715,7 @@ popupPromos.definition = {
 
 /**
 * @see \App\Http\Controllers\AdminController::popupPromos
- * @see app/Http/Controllers/AdminController.php:1189
+ * @see app/Http/Controllers/AdminController.php:1305
  * @route '/admin/popup-promos'
  */
 popupPromos.url = (options?: RouteQueryOptions) => {
@@ -724,7 +724,7 @@ popupPromos.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\AdminController::popupPromos
- * @see app/Http/Controllers/AdminController.php:1189
+ * @see app/Http/Controllers/AdminController.php:1305
  * @route '/admin/popup-promos'
  */
 popupPromos.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -733,7 +733,7 @@ popupPromos.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\AdminController::popupPromos
- * @see app/Http/Controllers/AdminController.php:1189
+ * @see app/Http/Controllers/AdminController.php:1305
  * @route '/admin/popup-promos'
  */
 popupPromos.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -743,7 +743,7 @@ popupPromos.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\AdminController::popupPromos
- * @see app/Http/Controllers/AdminController.php:1189
+ * @see app/Http/Controllers/AdminController.php:1305
  * @route '/admin/popup-promos'
  */
     const popupPromosForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -753,7 +753,7 @@ popupPromos.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\AdminController::popupPromos
- * @see app/Http/Controllers/AdminController.php:1189
+ * @see app/Http/Controllers/AdminController.php:1305
  * @route '/admin/popup-promos'
  */
         popupPromosForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -762,7 +762,7 @@ popupPromos.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\AdminController::popupPromos
- * @see app/Http/Controllers/AdminController.php:1189
+ * @see app/Http/Controllers/AdminController.php:1305
  * @route '/admin/popup-promos'
  */
         popupPromosForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -778,7 +778,7 @@ popupPromos.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     popupPromos.form = popupPromosForm
 /**
 * @see \App\Http\Controllers\AdminController::galleries
- * @see app/Http/Controllers/AdminController.php:1293
+ * @see app/Http/Controllers/AdminController.php:1409
  * @route '/admin/galleries'
  */
 export const galleries = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -793,7 +793,7 @@ galleries.definition = {
 
 /**
 * @see \App\Http\Controllers\AdminController::galleries
- * @see app/Http/Controllers/AdminController.php:1293
+ * @see app/Http/Controllers/AdminController.php:1409
  * @route '/admin/galleries'
  */
 galleries.url = (options?: RouteQueryOptions) => {
@@ -802,7 +802,7 @@ galleries.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\AdminController::galleries
- * @see app/Http/Controllers/AdminController.php:1293
+ * @see app/Http/Controllers/AdminController.php:1409
  * @route '/admin/galleries'
  */
 galleries.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -811,7 +811,7 @@ galleries.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\AdminController::galleries
- * @see app/Http/Controllers/AdminController.php:1293
+ * @see app/Http/Controllers/AdminController.php:1409
  * @route '/admin/galleries'
  */
 galleries.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -821,7 +821,7 @@ galleries.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\AdminController::galleries
- * @see app/Http/Controllers/AdminController.php:1293
+ * @see app/Http/Controllers/AdminController.php:1409
  * @route '/admin/galleries'
  */
     const galleriesForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -831,7 +831,7 @@ galleries.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\AdminController::galleries
- * @see app/Http/Controllers/AdminController.php:1293
+ * @see app/Http/Controllers/AdminController.php:1409
  * @route '/admin/galleries'
  */
         galleriesForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -840,7 +840,7 @@ galleries.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\AdminController::galleries
- * @see app/Http/Controllers/AdminController.php:1293
+ * @see app/Http/Controllers/AdminController.php:1409
  * @route '/admin/galleries'
  */
         galleriesForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

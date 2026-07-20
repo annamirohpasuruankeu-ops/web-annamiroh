@@ -41,6 +41,7 @@ class User extends Authenticatable implements PasskeyUser
         'agent_code',
         'agent_id',
         'is_active',
+        'password_changed',
     ];
 
     /**
@@ -54,8 +55,43 @@ class User extends Authenticatable implements PasskeyUser
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'password_changed' => 'boolean',
             'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    public static function normalizePhone(?string $phone): string
+    {
+        $digits = preg_replace('/\D+/', '', (string) $phone) ?? '';
+
+        if (str_starts_with($digits, '62')) {
+            return '0'.substr($digits, 2);
+        }
+
+        if (str_starts_with($digits, '8')) {
+            return '0'.$digits;
+        }
+
+        return $digits;
+    }
+
+    public static function nextAgentCode(string $prefix): string
+    {
+        $prefix = strtolower($prefix);
+        $codes = static::where('role', 'agen')
+            ->where('agent_code', 'like', $prefix.'%')
+            ->lockForUpdate()
+            ->pluck('agent_code');
+
+        $highest = $codes->reduce(function (int $max, ?string $code) use ($prefix) {
+            if ($code && preg_match('/^'.preg_quote($prefix, '/').'(\d+)$/i', $code, $matches)) {
+                return max($max, (int) $matches[1]);
+            }
+
+            return $max;
+        }, 0);
+
+        return $prefix.str_pad((string) ($highest + 1), 3, '0', STR_PAD_LEFT);
     }
 
     public function agent()

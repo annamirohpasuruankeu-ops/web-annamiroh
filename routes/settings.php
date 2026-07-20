@@ -13,6 +13,12 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('password-reminder', [SecurityController::class, 'passwordReminder'])
+        ->name('password-reminder');
+    Route::put('password-reminder', [SecurityController::class, 'updateInitialPassword'])
+        ->middleware('throttle:6,1')
+        ->name('password-reminder.update');
+
     Route::delete('settings/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('settings/security', [SecurityController::class, 'edit'])

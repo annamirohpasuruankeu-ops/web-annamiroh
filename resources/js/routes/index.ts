@@ -366,3 +366,81 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
     
     dashboard.form = dashboardForm
+/**
+* @see \App\Http\Controllers\Settings\SecurityController::passwordReminder
+ * @see app/Http/Controllers/Settings/SecurityController.php:68
+ * @route '/password-reminder'
+ */
+export const passwordReminder = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: passwordReminder.url(options),
+    method: 'get',
+})
+
+passwordReminder.definition = {
+    methods: ["get","head"],
+    url: '/password-reminder',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\Settings\SecurityController::passwordReminder
+ * @see app/Http/Controllers/Settings/SecurityController.php:68
+ * @route '/password-reminder'
+ */
+passwordReminder.url = (options?: RouteQueryOptions) => {
+    return passwordReminder.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Settings\SecurityController::passwordReminder
+ * @see app/Http/Controllers/Settings/SecurityController.php:68
+ * @route '/password-reminder'
+ */
+passwordReminder.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: passwordReminder.url(options),
+    method: 'get',
+})
+/**
+* @see \App\Http\Controllers\Settings\SecurityController::passwordReminder
+ * @see app/Http/Controllers/Settings/SecurityController.php:68
+ * @route '/password-reminder'
+ */
+passwordReminder.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: passwordReminder.url(options),
+    method: 'head',
+})
+
+    /**
+* @see \App\Http\Controllers\Settings\SecurityController::passwordReminder
+ * @see app/Http/Controllers/Settings/SecurityController.php:68
+ * @route '/password-reminder'
+ */
+    const passwordReminderForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        action: passwordReminder.url(options),
+        method: 'get',
+    })
+
+            /**
+* @see \App\Http\Controllers\Settings\SecurityController::passwordReminder
+ * @see app/Http/Controllers/Settings/SecurityController.php:68
+ * @route '/password-reminder'
+ */
+        passwordReminderForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: passwordReminder.url(options),
+            method: 'get',
+        })
+            /**
+* @see \App\Http\Controllers\Settings\SecurityController::passwordReminder
+ * @see app/Http/Controllers/Settings/SecurityController.php:68
+ * @route '/password-reminder'
+ */
+        passwordReminderForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+            action: passwordReminder.url({
+                        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+                            _method: 'HEAD',
+                            ...(options?.query ?? options?.mergeQuery ?? {}),
+                        }
+                    }),
+            method: 'get',
+        })
+    
+    passwordReminder.form = passwordReminderForm

@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\AdminController::toggleStatus
- * @see app/Http/Controllers/AdminController.php:1103
+ * @see app/Http/Controllers/AdminController.php:1219
  * @route '/admin/users/{id}/toggle-status'
  */
 export const toggleStatus = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -16,7 +16,7 @@ toggleStatus.definition = {
 
 /**
 * @see \App\Http\Controllers\AdminController::toggleStatus
- * @see app/Http/Controllers/AdminController.php:1103
+ * @see app/Http/Controllers/AdminController.php:1219
  * @route '/admin/users/{id}/toggle-status'
  */
 toggleStatus.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -44,7 +44,7 @@ toggleStatus.url = (args: { id: string | number } | [id: string | number ] | str
 
 /**
 * @see \App\Http\Controllers\AdminController::toggleStatus
- * @see app/Http/Controllers/AdminController.php:1103
+ * @see app/Http/Controllers/AdminController.php:1219
  * @route '/admin/users/{id}/toggle-status'
  */
 toggleStatus.patch = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -54,7 +54,7 @@ toggleStatus.patch = (args: { id: string | number } | [id: string | number ] | s
 
     /**
 * @see \App\Http\Controllers\AdminController::toggleStatus
- * @see app/Http/Controllers/AdminController.php:1103
+ * @see app/Http/Controllers/AdminController.php:1219
  * @route '/admin/users/{id}/toggle-status'
  */
     const toggleStatusForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -69,7 +69,7 @@ toggleStatus.patch = (args: { id: string | number } | [id: string | number ] | s
 
             /**
 * @see \App\Http\Controllers\AdminController::toggleStatus
- * @see app/Http/Controllers/AdminController.php:1103
+ * @see app/Http/Controllers/AdminController.php:1219
  * @route '/admin/users/{id}/toggle-status'
  */
         toggleStatusForm.patch = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
