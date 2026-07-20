@@ -6,7 +6,7 @@ export default function ChatWidget() {
     const [isOpen, setIsOpen] = useState(false);
 
     // ================= CONFIG: SILAKAN GANTI NOMOR WHATSAPP DI SINI =================
-    const whatsappNumber = "6281252777871"; 
+    const whatsappNumber = "6285790721167"; 
     // ================================================================================
 
     const handleMenuClick = (menuType: 'paket' | 'dokumen' | 'cs') => {

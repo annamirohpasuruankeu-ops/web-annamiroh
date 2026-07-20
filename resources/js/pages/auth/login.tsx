@@ -13,9 +13,11 @@ type Props = {
 };
 
 export default function Login({ status, canResetPassword }: Props) {
-    const packageId = typeof window !== 'undefined'
-        ? (new URLSearchParams(window.location.search).get('package_id') ?? '')
-        : '';
+    const packageId =
+        typeof window !== 'undefined'
+            ? (new URLSearchParams(window.location.search).get('package_id') ??
+              '')
+            : '';
 
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
@@ -35,6 +37,11 @@ export default function Login({ status, canResetPassword }: Props) {
         ? register.url({ query: { package_id: packageId } })
         : register().url;
 
+    const csWhatsappMessage = encodeURIComponent(
+        "Assalamu'alaikum Admin Annamiroh Travel, saya membutuhkan bantuan terkait login atau akses akun di website Annamiroh. Mohon bantuannya. Terima kasih.",
+    );
+    const csWhatsappUrl = `https://wa.me/6285790721167?text=${csWhatsappMessage}`;
+
     return (
         <div className="flex min-h-screen w-full flex-col bg-white font-sans selection:bg-emerald-200 selection:text-emerald-900">
             <Head title="Log in" />
@@ -43,7 +50,7 @@ export default function Login({ status, canResetPassword }: Props) {
             <Navbar />
 
             {/* 2. Container Tampilan Split (Left Hero + Right Form) */}
-            <div className="flex flex-1 w-full pt-16 md:pt-20">
+            <div className="flex w-full flex-1 pt-16 md:pt-20">
                 {/* Left side - Branding/Hero */}
                 <div className="relative hidden w-1/2 items-center justify-center overflow-hidden bg-emerald-900 p-16 lg:flex">
                     {/* Decorative elements */}
@@ -53,13 +60,13 @@ export default function Login({ status, canResetPassword }: Props) {
                     </div>
 
                     <div className="relative z-10 max-w-xl text-white">
-                        
                         <h1 className="mb-8 text-5xl leading-tight font-bold">
                             Layanan perjalanan umrah dan haji yang amanah.
                         </h1>
                         <p className="text-xl leading-relaxed text-emerald-100/80">
                             Silakan masuk untuk mengakses panel Anda, mengelola
-                            pendaftaran jamaah, paket keberangkatan, dan laporan.
+                            pendaftaran jamaah, paket keberangkatan, dan
+                            laporan.
                         </p>
                     </div>
                 </div>
@@ -96,8 +103,8 @@ export default function Login({ status, canResetPassword }: Props) {
                                         className="flex-shrink-0 text-emerald-600"
                                     />
                                     <p className="text-sm text-emerald-800">
-                                        Anda akan langsung diarahkan ke pemesanan
-                                        paket setelah masuk.
+                                        Anda akan langsung diarahkan ke
+                                        pemesanan paket setelah masuk.
                                     </p>
                                 </div>
                             )}
@@ -113,7 +120,10 @@ export default function Login({ status, canResetPassword }: Props) {
                                 </label>
                                 <div className="relative">
                                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-                                        <Mail size={20} className="text-gray-400" />
+                                        <Mail
+                                            size={20}
+                                            className="text-gray-400"
+                                        />
                                     </div>
                                     <input
                                         id="email"
@@ -153,7 +163,10 @@ export default function Login({ status, canResetPassword }: Props) {
                                 </div>
                                 <div className="relative">
                                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
-                                        <Lock size={20} className="text-gray-400" />
+                                        <Lock
+                                            size={20}
+                                            className="text-gray-400"
+                                        />
                                     </div>
                                     <input
                                         id="password"
@@ -214,7 +227,7 @@ export default function Login({ status, canResetPassword }: Props) {
                                 </button>
 
                                 <a
-                                    href="https://wa.me/6285790721167"
+                                    href={csWhatsappUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="group flex w-full items-center justify-center rounded-xl border border-emerald-600 bg-white px-4 py-4 text-[15px] font-semibold text-emerald-700 shadow-sm transition-all hover:bg-emerald-50/50 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:outline-none"

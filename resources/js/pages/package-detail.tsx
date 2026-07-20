@@ -75,7 +75,7 @@ export default function PackageDetail({ package: pkg }: Props) {
     const whatsappText = encodeURIComponent(
         `Assalamu'alaikum, saya ingin konsultasi mengenai paket ${pkg.name}${pkg.code ? ` (${pkg.code})` : ''}.\n\nLink paket:\n${pkg.detail_url}`,
     );
-    const whatsappUrl = `https://api.whatsapp.com/send?phone=6281252777871&text=${whatsappText}`;
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=6285790721167&text=${whatsappText}`;
 
     return (
         <div className="flex min-h-screen flex-col bg-slate-50 font-sans text-slate-800">
