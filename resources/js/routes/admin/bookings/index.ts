@@ -363,7 +363,7 @@ registrationForm.head = (args: { id: string | number } | [id: string | number ] 
     registrationForm.form = registrationFormForm
 /**
 * @see \App\Http\Controllers\AdminController::movePackage
- * @see app/Http/Controllers/AdminController.php:1917
+ * @see app/Http/Controllers/AdminController.php:1923
  * @route '/admin/bookings/{id}/move-package'
  */
 export const movePackage = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -378,7 +378,7 @@ movePackage.definition = {
 
 /**
 * @see \App\Http\Controllers\AdminController::movePackage
- * @see app/Http/Controllers/AdminController.php:1917
+ * @see app/Http/Controllers/AdminController.php:1923
  * @route '/admin/bookings/{id}/move-package'
  */
 movePackage.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -406,7 +406,7 @@ movePackage.url = (args: { id: string | number } | [id: string | number ] | stri
 
 /**
 * @see \App\Http\Controllers\AdminController::movePackage
- * @see app/Http/Controllers/AdminController.php:1917
+ * @see app/Http/Controllers/AdminController.php:1923
  * @route '/admin/bookings/{id}/move-package'
  */
 movePackage.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -416,7 +416,7 @@ movePackage.post = (args: { id: string | number } | [id: string | number ] | str
 
     /**
 * @see \App\Http\Controllers\AdminController::movePackage
- * @see app/Http/Controllers/AdminController.php:1917
+ * @see app/Http/Controllers/AdminController.php:1923
  * @route '/admin/bookings/{id}/move-package'
  */
     const movePackageForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -426,7 +426,7 @@ movePackage.post = (args: { id: string | number } | [id: string | number ] | str
 
             /**
 * @see \App\Http\Controllers\AdminController::movePackage
- * @see app/Http/Controllers/AdminController.php:1917
+ * @see app/Http/Controllers/AdminController.php:1923
  * @route '/admin/bookings/{id}/move-package'
  */
         movePackageForm.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

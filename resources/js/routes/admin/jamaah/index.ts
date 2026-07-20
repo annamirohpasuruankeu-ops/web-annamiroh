@@ -80,7 +80,7 @@ exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     exportMethod.form = exportMethodForm
 /**
 * @see \App\Http\Controllers\AdminController::importMethod
- * @see app/Http/Controllers/AdminController.php:2069
+ * @see app/Http/Controllers/AdminController.php:2075
  * @route '/admin/jamaah/import'
  */
 export const importMethod = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -95,7 +95,7 @@ importMethod.definition = {
 
 /**
 * @see \App\Http\Controllers\AdminController::importMethod
- * @see app/Http/Controllers/AdminController.php:2069
+ * @see app/Http/Controllers/AdminController.php:2075
  * @route '/admin/jamaah/import'
  */
 importMethod.url = (options?: RouteQueryOptions) => {
@@ -104,7 +104,7 @@ importMethod.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\AdminController::importMethod
- * @see app/Http/Controllers/AdminController.php:2069
+ * @see app/Http/Controllers/AdminController.php:2075
  * @route '/admin/jamaah/import'
  */
 importMethod.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -114,7 +114,7 @@ importMethod.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\AdminController::importMethod
- * @see app/Http/Controllers/AdminController.php:2069
+ * @see app/Http/Controllers/AdminController.php:2075
  * @route '/admin/jamaah/import'
  */
     const importMethodForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -124,7 +124,7 @@ importMethod.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\AdminController::importMethod
- * @see app/Http/Controllers/AdminController.php:2069
+ * @see app/Http/Controllers/AdminController.php:2075
  * @route '/admin/jamaah/import'
  */
         importMethodForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
