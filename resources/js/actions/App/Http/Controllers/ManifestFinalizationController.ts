@@ -82,7 +82,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
  * @see app/Http/Controllers/ManifestFinalizationController.php:163
  * @route '/admin/manifests/{package}/download'
  */
-export const download = (args: { package: string | number | { id: string | number } } | [packageParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const download = (args: { package: number | { id: number } } | [packageParam: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: download.url(args, options),
     method: 'get',
 })
@@ -97,7 +97,7 @@ download.definition = {
  * @see app/Http/Controllers/ManifestFinalizationController.php:163
  * @route '/admin/manifests/{package}/download'
  */
-download.url = (args: { package: string | number | { id: string | number } } | [packageParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+download.url = (args: { package: number | { id: number } } | [packageParam: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { package: args }
     }
@@ -130,7 +130,7 @@ download.url = (args: { package: string | number | { id: string | number } } | [
  * @see app/Http/Controllers/ManifestFinalizationController.php:163
  * @route '/admin/manifests/{package}/download'
  */
-download.get = (args: { package: string | number | { id: string | number } } | [packageParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+download.get = (args: { package: number | { id: number } } | [packageParam: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: download.url(args, options),
     method: 'get',
 })
@@ -139,7 +139,7 @@ download.get = (args: { package: string | number | { id: string | number } } | [
  * @see app/Http/Controllers/ManifestFinalizationController.php:163
  * @route '/admin/manifests/{package}/download'
  */
-download.head = (args: { package: string | number | { id: string | number } } | [packageParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+download.head = (args: { package: number | { id: number } } | [packageParam: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: download.url(args, options),
     method: 'head',
 })
@@ -149,7 +149,7 @@ download.head = (args: { package: string | number | { id: string | number } } | 
  * @see app/Http/Controllers/ManifestFinalizationController.php:163
  * @route '/admin/manifests/{package}/download'
  */
-    const downloadForm = (args: { package: string | number | { id: string | number } } | [packageParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const downloadForm = (args: { package: number | { id: number } } | [packageParam: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: download.url(args, options),
         method: 'get',
     })
@@ -159,7 +159,7 @@ download.head = (args: { package: string | number | { id: string | number } } | 
  * @see app/Http/Controllers/ManifestFinalizationController.php:163
  * @route '/admin/manifests/{package}/download'
  */
-        downloadForm.get = (args: { package: string | number | { id: string | number } } | [packageParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        downloadForm.get = (args: { package: number | { id: number } } | [packageParam: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: download.url(args, options),
             method: 'get',
         })
@@ -168,7 +168,7 @@ download.head = (args: { package: string | number | { id: string | number } } | 
  * @see app/Http/Controllers/ManifestFinalizationController.php:163
  * @route '/admin/manifests/{package}/download'
  */
-        downloadForm.head = (args: { package: string | number | { id: string | number } } | [packageParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        downloadForm.head = (args: { package: number | { id: number } } | [packageParam: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: download.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',
@@ -184,7 +184,7 @@ download.head = (args: { package: string | number | { id: string | number } } | 
  * @see app/Http/Controllers/ManifestFinalizationController.php:87
  * @route '/admin/manifests/{package}/lock'
  */
-export const lock = (args: { package: string | number | { id: string | number } } | [packageParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+export const lock = (args: { package: number | { id: number } } | [packageParam: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: lock.url(args, options),
     method: 'post',
 })
@@ -199,7 +199,7 @@ lock.definition = {
  * @see app/Http/Controllers/ManifestFinalizationController.php:87
  * @route '/admin/manifests/{package}/lock'
  */
-lock.url = (args: { package: string | number | { id: string | number } } | [packageParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+lock.url = (args: { package: number | { id: number } } | [packageParam: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { package: args }
     }
@@ -232,7 +232,7 @@ lock.url = (args: { package: string | number | { id: string | number } } | [pack
  * @see app/Http/Controllers/ManifestFinalizationController.php:87
  * @route '/admin/manifests/{package}/lock'
  */
-lock.post = (args: { package: string | number | { id: string | number } } | [packageParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+lock.post = (args: { package: number | { id: number } } | [packageParam: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: lock.url(args, options),
     method: 'post',
 })
@@ -242,7 +242,7 @@ lock.post = (args: { package: string | number | { id: string | number } } | [pac
  * @see app/Http/Controllers/ManifestFinalizationController.php:87
  * @route '/admin/manifests/{package}/lock'
  */
-    const lockForm = (args: { package: string | number | { id: string | number } } | [packageParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    const lockForm = (args: { package: number | { id: number } } | [packageParam: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
         action: lock.url(args, options),
         method: 'post',
     })
@@ -252,7 +252,7 @@ lock.post = (args: { package: string | number | { id: string | number } } | [pac
  * @see app/Http/Controllers/ManifestFinalizationController.php:87
  * @route '/admin/manifests/{package}/lock'
  */
-        lockForm.post = (args: { package: string | number | { id: string | number } } | [packageParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        lockForm.post = (args: { package: number | { id: number } } | [packageParam: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
             action: lock.url(args, options),
             method: 'post',
         })
@@ -263,7 +263,7 @@ lock.post = (args: { package: string | number | { id: string | number } } | [pac
  * @see app/Http/Controllers/ManifestFinalizationController.php:128
  * @route '/admin/manifests/{package}/unlock'
  */
-export const unlock = (args: { package: string | number | { id: string | number } } | [packageParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+export const unlock = (args: { package: number | { id: number } } | [packageParam: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: unlock.url(args, options),
     method: 'post',
 })
@@ -278,7 +278,7 @@ unlock.definition = {
  * @see app/Http/Controllers/ManifestFinalizationController.php:128
  * @route '/admin/manifests/{package}/unlock'
  */
-unlock.url = (args: { package: string | number | { id: string | number } } | [packageParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+unlock.url = (args: { package: number | { id: number } } | [packageParam: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { package: args }
     }
@@ -311,7 +311,7 @@ unlock.url = (args: { package: string | number | { id: string | number } } | [pa
  * @see app/Http/Controllers/ManifestFinalizationController.php:128
  * @route '/admin/manifests/{package}/unlock'
  */
-unlock.post = (args: { package: string | number | { id: string | number } } | [packageParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+unlock.post = (args: { package: number | { id: number } } | [packageParam: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: unlock.url(args, options),
     method: 'post',
 })
@@ -321,7 +321,7 @@ unlock.post = (args: { package: string | number | { id: string | number } } | [p
  * @see app/Http/Controllers/ManifestFinalizationController.php:128
  * @route '/admin/manifests/{package}/unlock'
  */
-    const unlockForm = (args: { package: string | number | { id: string | number } } | [packageParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    const unlockForm = (args: { package: number | { id: number } } | [packageParam: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
         action: unlock.url(args, options),
         method: 'post',
     })
@@ -331,7 +331,7 @@ unlock.post = (args: { package: string | number | { id: string | number } } | [p
  * @see app/Http/Controllers/ManifestFinalizationController.php:128
  * @route '/admin/manifests/{package}/unlock'
  */
-        unlockForm.post = (args: { package: string | number | { id: string | number } } | [packageParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+        unlockForm.post = (args: { package: number | { id: number } } | [packageParam: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
             action: unlock.url(args, options),
             method: 'post',
         })

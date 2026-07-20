@@ -321,7 +321,7 @@ isiJamaah.head = (args: { id: string | number } | [id: string | number ] | strin
     isiJamaah.form = isiJamaahForm
 /**
 * @see \App\Http\Controllers\AdminController::saveJamaah
- * @see app/Http/Controllers/AdminController.php:1977
+ * @see app/Http/Controllers/AdminController.php:1988
  * @route '/admin/orders/{id}/save-jamaah'
  */
 export const saveJamaah = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -336,7 +336,7 @@ saveJamaah.definition = {
 
 /**
 * @see \App\Http\Controllers\AdminController::saveJamaah
- * @see app/Http/Controllers/AdminController.php:1977
+ * @see app/Http/Controllers/AdminController.php:1988
  * @route '/admin/orders/{id}/save-jamaah'
  */
 saveJamaah.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -364,7 +364,7 @@ saveJamaah.url = (args: { id: string | number } | [id: string | number ] | strin
 
 /**
 * @see \App\Http\Controllers\AdminController::saveJamaah
- * @see app/Http/Controllers/AdminController.php:1977
+ * @see app/Http/Controllers/AdminController.php:1988
  * @route '/admin/orders/{id}/save-jamaah'
  */
 saveJamaah.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -374,7 +374,7 @@ saveJamaah.post = (args: { id: string | number } | [id: string | number ] | stri
 
     /**
 * @see \App\Http\Controllers\AdminController::saveJamaah
- * @see app/Http/Controllers/AdminController.php:1977
+ * @see app/Http/Controllers/AdminController.php:1988
  * @route '/admin/orders/{id}/save-jamaah'
  */
     const saveJamaahForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -384,7 +384,7 @@ saveJamaah.post = (args: { id: string | number } | [id: string | number ] | stri
 
             /**
 * @see \App\Http\Controllers\AdminController::saveJamaah
- * @see app/Http/Controllers/AdminController.php:1977
+ * @see app/Http/Controllers/AdminController.php:1988
  * @route '/admin/orders/{id}/save-jamaah'
  */
         saveJamaahForm.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

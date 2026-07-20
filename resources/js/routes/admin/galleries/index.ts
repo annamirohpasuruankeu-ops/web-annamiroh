@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\AdminController::store
- * @see app/Http/Controllers/AdminController.php:1448
+ * @see app/Http/Controllers/AdminController.php:1452
  * @route '/admin/galleries'
  */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\AdminController::store
- * @see app/Http/Controllers/AdminController.php:1448
+ * @see app/Http/Controllers/AdminController.php:1452
  * @route '/admin/galleries'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\AdminController::store
- * @see app/Http/Controllers/AdminController.php:1448
+ * @see app/Http/Controllers/AdminController.php:1452
  * @route '/admin/galleries'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -35,7 +35,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\AdminController::store
- * @see app/Http/Controllers/AdminController.php:1448
+ * @see app/Http/Controllers/AdminController.php:1452
  * @route '/admin/galleries'
  */
     const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -45,7 +45,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\AdminController::store
- * @see app/Http/Controllers/AdminController.php:1448
+ * @see app/Http/Controllers/AdminController.php:1452
  * @route '/admin/galleries'
  */
         storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -56,7 +56,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     store.form = storeForm
 /**
 * @see \App\Http\Controllers\AdminController::update
- * @see app/Http/Controllers/AdminController.php:1472
+ * @see app/Http/Controllers/AdminController.php:1476
  * @route '/admin/galleries/{id}'
  */
 export const update = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -71,7 +71,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\AdminController::update
- * @see app/Http/Controllers/AdminController.php:1472
+ * @see app/Http/Controllers/AdminController.php:1476
  * @route '/admin/galleries/{id}'
  */
 update.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -99,7 +99,7 @@ update.url = (args: { id: string | number } | [id: string | number ] | string | 
 
 /**
 * @see \App\Http\Controllers\AdminController::update
- * @see app/Http/Controllers/AdminController.php:1472
+ * @see app/Http/Controllers/AdminController.php:1476
  * @route '/admin/galleries/{id}'
  */
 update.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -109,7 +109,7 @@ update.put = (args: { id: string | number } | [id: string | number ] | string | 
 
     /**
 * @see \App\Http\Controllers\AdminController::update
- * @see app/Http/Controllers/AdminController.php:1472
+ * @see app/Http/Controllers/AdminController.php:1476
  * @route '/admin/galleries/{id}'
  */
     const updateForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -124,7 +124,7 @@ update.put = (args: { id: string | number } | [id: string | number ] | string | 
 
             /**
 * @see \App\Http\Controllers\AdminController::update
- * @see app/Http/Controllers/AdminController.php:1472
+ * @see app/Http/Controllers/AdminController.php:1476
  * @route '/admin/galleries/{id}'
  */
         updateForm.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -140,7 +140,7 @@ update.put = (args: { id: string | number } | [id: string | number ] | string | 
     update.form = updateForm
 /**
 * @see \App\Http\Controllers\AdminController::toggle
- * @see app/Http/Controllers/AdminController.php:1503
+ * @see app/Http/Controllers/AdminController.php:1507
  * @route '/admin/galleries/{id}/toggle'
  */
 export const toggle = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -155,7 +155,7 @@ toggle.definition = {
 
 /**
 * @see \App\Http\Controllers\AdminController::toggle
- * @see app/Http/Controllers/AdminController.php:1503
+ * @see app/Http/Controllers/AdminController.php:1507
  * @route '/admin/galleries/{id}/toggle'
  */
 toggle.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -183,7 +183,7 @@ toggle.url = (args: { id: string | number } | [id: string | number ] | string | 
 
 /**
 * @see \App\Http\Controllers\AdminController::toggle
- * @see app/Http/Controllers/AdminController.php:1503
+ * @see app/Http/Controllers/AdminController.php:1507
  * @route '/admin/galleries/{id}/toggle'
  */
 toggle.patch = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -193,7 +193,7 @@ toggle.patch = (args: { id: string | number } | [id: string | number ] | string 
 
     /**
 * @see \App\Http\Controllers\AdminController::toggle
- * @see app/Http/Controllers/AdminController.php:1503
+ * @see app/Http/Controllers/AdminController.php:1507
  * @route '/admin/galleries/{id}/toggle'
  */
     const toggleForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -208,7 +208,7 @@ toggle.patch = (args: { id: string | number } | [id: string | number ] | string 
 
             /**
 * @see \App\Http\Controllers\AdminController::toggle
- * @see app/Http/Controllers/AdminController.php:1503
+ * @see app/Http/Controllers/AdminController.php:1507
  * @route '/admin/galleries/{id}/toggle'
  */
         toggleForm.patch = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -224,7 +224,7 @@ toggle.patch = (args: { id: string | number } | [id: string | number ] | string 
     toggle.form = toggleForm
 /**
 * @see \App\Http\Controllers\AdminController::destroy
- * @see app/Http/Controllers/AdminController.php:1515
+ * @see app/Http/Controllers/AdminController.php:1519
  * @route '/admin/galleries/{id}'
  */
 export const destroy = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -239,7 +239,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\AdminController::destroy
- * @see app/Http/Controllers/AdminController.php:1515
+ * @see app/Http/Controllers/AdminController.php:1519
  * @route '/admin/galleries/{id}'
  */
 destroy.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -267,7 +267,7 @@ destroy.url = (args: { id: string | number } | [id: string | number ] | string |
 
 /**
 * @see \App\Http\Controllers\AdminController::destroy
- * @see app/Http/Controllers/AdminController.php:1515
+ * @see app/Http/Controllers/AdminController.php:1519
  * @route '/admin/galleries/{id}'
  */
 destroy.delete = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -277,7 +277,7 @@ destroy.delete = (args: { id: string | number } | [id: string | number ] | strin
 
     /**
 * @see \App\Http\Controllers\AdminController::destroy
- * @see app/Http/Controllers/AdminController.php:1515
+ * @see app/Http/Controllers/AdminController.php:1519
  * @route '/admin/galleries/{id}'
  */
     const destroyForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -292,7 +292,7 @@ destroy.delete = (args: { id: string | number } | [id: string | number ] | strin
 
             /**
 * @see \App\Http\Controllers\AdminController::destroy
- * @see app/Http/Controllers/AdminController.php:1515
+ * @see app/Http/Controllers/AdminController.php:1519
  * @route '/admin/galleries/{id}'
  */
         destroyForm.delete = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

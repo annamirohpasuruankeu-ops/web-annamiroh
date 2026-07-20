@@ -2,7 +2,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 import financialA56e88 from './financial'
 /**
 * @see \App\Http\Controllers\AdminController::financial
- * @see app/Http/Controllers/AdminController.php:1531
+ * @see app/Http/Controllers/AdminController.php:1535
  * @route '/admin/reports/financial'
  */
 export const financial = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -17,7 +17,7 @@ financial.definition = {
 
 /**
 * @see \App\Http\Controllers\AdminController::financial
- * @see app/Http/Controllers/AdminController.php:1531
+ * @see app/Http/Controllers/AdminController.php:1535
  * @route '/admin/reports/financial'
  */
 financial.url = (options?: RouteQueryOptions) => {
@@ -26,7 +26,7 @@ financial.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\AdminController::financial
- * @see app/Http/Controllers/AdminController.php:1531
+ * @see app/Http/Controllers/AdminController.php:1535
  * @route '/admin/reports/financial'
  */
 financial.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ financial.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\AdminController::financial
- * @see app/Http/Controllers/AdminController.php:1531
+ * @see app/Http/Controllers/AdminController.php:1535
  * @route '/admin/reports/financial'
  */
 financial.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ financial.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\AdminController::financial
- * @see app/Http/Controllers/AdminController.php:1531
+ * @see app/Http/Controllers/AdminController.php:1535
  * @route '/admin/reports/financial'
  */
     const financialForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ financial.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\AdminController::financial
- * @see app/Http/Controllers/AdminController.php:1531
+ * @see app/Http/Controllers/AdminController.php:1535
  * @route '/admin/reports/financial'
  */
         financialForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -64,7 +64,7 @@ financial.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\AdminController::financial
- * @see app/Http/Controllers/AdminController.php:1531
+ * @see app/Http/Controllers/AdminController.php:1535
  * @route '/admin/reports/financial'
  */
         financialForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

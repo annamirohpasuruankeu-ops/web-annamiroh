@@ -82,7 +82,7 @@ reguler.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
  * @see app/Http/Controllers/PublicPackageController.php:23
  * @route '/paket-umroh/{package}'
  */
-export const show = (args: { package: string | number | { id: string | number } } | [packageParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const show = (args: { package: number | { id: number } } | [packageParam: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
 })
@@ -97,7 +97,7 @@ show.definition = {
  * @see app/Http/Controllers/PublicPackageController.php:23
  * @route '/paket-umroh/{package}'
  */
-show.url = (args: { package: string | number | { id: string | number } } | [packageParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
+show.url = (args: { package: number | { id: number } } | [packageParam: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { package: args }
     }
@@ -130,7 +130,7 @@ show.url = (args: { package: string | number | { id: string | number } } | [pack
  * @see app/Http/Controllers/PublicPackageController.php:23
  * @route '/paket-umroh/{package}'
  */
-show.get = (args: { package: string | number | { id: string | number } } | [packageParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+show.get = (args: { package: number | { id: number } } | [packageParam: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: show.url(args, options),
     method: 'get',
 })
@@ -139,7 +139,7 @@ show.get = (args: { package: string | number | { id: string | number } } | [pack
  * @see app/Http/Controllers/PublicPackageController.php:23
  * @route '/paket-umroh/{package}'
  */
-show.head = (args: { package: string | number | { id: string | number } } | [packageParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+show.head = (args: { package: number | { id: number } } | [packageParam: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: show.url(args, options),
     method: 'head',
 })
@@ -149,7 +149,7 @@ show.head = (args: { package: string | number | { id: string | number } } | [pac
  * @see app/Http/Controllers/PublicPackageController.php:23
  * @route '/paket-umroh/{package}'
  */
-    const showForm = (args: { package: string | number | { id: string | number } } | [packageParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    const showForm = (args: { package: number | { id: number } } | [packageParam: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
         action: show.url(args, options),
         method: 'get',
     })
@@ -159,7 +159,7 @@ show.head = (args: { package: string | number | { id: string | number } } | [pac
  * @see app/Http/Controllers/PublicPackageController.php:23
  * @route '/paket-umroh/{package}'
  */
-        showForm.get = (args: { package: string | number | { id: string | number } } | [packageParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        showForm.get = (args: { package: number | { id: number } } | [packageParam: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: show.url(args, options),
             method: 'get',
         })
@@ -168,7 +168,7 @@ show.head = (args: { package: string | number | { id: string | number } } | [pac
  * @see app/Http/Controllers/PublicPackageController.php:23
  * @route '/paket-umroh/{package}'
  */
-        showForm.head = (args: { package: string | number | { id: string | number } } | [packageParam: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+        showForm.head = (args: { package: number | { id: number } } | [packageParam: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
             action: show.url(args, {
                         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
                             _method: 'HEAD',

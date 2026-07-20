@@ -138,10 +138,7 @@ class AdminController extends Controller
             ->orderBy('created_at', 'desc');
 
         if ($role === 'agen') {
-            $query->whereHas('user', function ($q) use ($request) {
-                $q->where('agent_id', $request->user()->id)
-                    ->orWhere('id', $request->user()->id);
-            });
+            $this->scopeJamaahForAgent($query, $request->user()->id);
         } elseif ($agentId && in_array($role, ['admin', 'admin_manifest'])) {
             $query->whereHas('user', function ($q) use ($agentId) {
                 $q->where('agent_id', $agentId)
@@ -399,14 +396,11 @@ xmlns="http://www.w3.org/TR/REC-html40">
 
         $search = $request->input('search');
 
-        $query = \App\Models\JamaahMember::with(['user.agent'])
+        $query = \App\Models\JamaahMember::with(['user.agent', 'importer:id,name,role'])
             ->orderBy('created_at', 'desc');
 
         if ($role === 'agen') {
-            $query->whereHas('user', function ($q) use ($request) {
-                $q->where('agent_id', $request->user()->id)
-                    ->orWhere('id', $request->user()->id);
-            });
+            $this->scopeJamaahForAgent($query, $request->user()->id);
         }
 
         if ($search) {
@@ -419,15 +413,11 @@ xmlns="http://www.w3.org/TR/REC-html40">
 
         // Calculate statistics for entire database
         if ($role === 'agen') {
-            $totalJamaahCount = \App\Models\JamaahMember::whereHas('user', function ($q) use ($request) {
-                $q->where('agent_id', $request->user()->id)
-                    ->orWhere('id', $request->user()->id);
-            })->count();
+            $agentMembers = \App\Models\JamaahMember::query();
+            $this->scopeJamaahForAgent($agentMembers, $request->user()->id);
+            $totalJamaahCount = (clone $agentMembers)->count();
 
-            $passportFilledCount = \App\Models\JamaahMember::whereHas('user', function ($q) use ($request) {
-                $q->where('agent_id', $request->user()->id)
-                    ->orWhere('id', $request->user()->id);
-            })->whereNotNull('nomor_paspor')->where('nomor_paspor', '!=', '')->count();
+            $passportFilledCount = (clone $agentMembers)->whereNotNull('nomor_paspor')->where('nomor_paspor', '!=', '')->count();
         } else {
             $totalJamaahCount = \App\Models\JamaahMember::count();
             $passportFilledCount = \App\Models\JamaahMember::whereNotNull('nomor_paspor')->where('nomor_paspor', '!=', '')->count();
@@ -439,7 +429,8 @@ xmlns="http://www.w3.org/TR/REC-html40">
             'passportFilledCount' => $passportFilledCount,
             'filters' => [
                 'search' => $search,
-            ]
+            ],
+            'canImport' => in_array($role, ['admin', 'admin_manifest', 'agen'], true),
         ]);
     }
 
@@ -539,7 +530,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
         }
 
         $member = $booking->jamaahMember ?: ($booking->user ? $booking->user->jamaahMembers()->first() : null);
-        $statusDokumen = ($member && $member->ktp_file && $member->kk_file && $member->paspor_file && $member->vaksin_file) ? 'lengkap' : 'belum_lengkap';
+        $statusDokumen = ($member && $member->paspor_file && $member->vaksin_file) ? 'lengkap' : 'belum_lengkap';
 
         $updateData = [
             'status_pembayaran' => $statusPembayaran,
@@ -607,7 +598,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                 ->exists();
 
             if (!$exists) {
-                $statusDokumen = ($member->ktp_file && $member->kk_file && $member->paspor_file && $member->vaksin_file) ? 'lengkap' : 'belum_lengkap';
+                $statusDokumen = ($member->paspor_file && $member->vaksin_file) ? 'lengkap' : 'belum_lengkap';
                 Booking::create([
                     'user_id' => $request->user_id,
                     'jamaah_member_id' => $member->id,
@@ -1051,6 +1042,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
             'ktp_file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'kk_file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'paspor_file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'paspor_second_file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
             'vaksin_file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
@@ -1094,6 +1086,9 @@ xmlns="http://www.w3.org/TR/REC-html40">
         if ($request->hasFile('paspor_file')) {
             $memberData['paspor_file'] = $request->file('paspor_file')->store('documents', 'public');
         }
+        if ($request->hasFile('paspor_second_file')) {
+            $memberData['paspor_second_file'] = $request->file('paspor_second_file')->store('documents', 'public');
+        }
         if ($request->hasFile('vaksin_file')) {
             $memberData['vaksin_file'] = $request->file('vaksin_file')->store('documents', 'public');
         }
@@ -1101,7 +1096,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
         $member = $user->jamaahMembers()->create($memberData);
 
         if (!empty($validated['package_id'])) {
-            $statusDokumen = (isset($memberData['ktp_file']) && isset($memberData['kk_file']) && isset($memberData['paspor_file']) && isset($memberData['vaksin_file'])) ? 'lengkap' : 'belum_lengkap';
+            $statusDokumen = (isset($memberData['paspor_file']) && isset($memberData['vaksin_file'])) ? 'lengkap' : 'belum_lengkap';
             Booking::create([
                 'user_id' => $user->id,
                 'jamaah_member_id' => $member->id,
@@ -1123,7 +1118,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
         $member = \App\Models\JamaahMember::findOrFail($id);
         ManifestLock::ensureMemberEditable($member);
 
-        if ($role === 'agen' && $member->user?->agent_id !== $request->user()->id) {
+        if ($role === 'agen' && !$this->agentCanAccessMember($member, $request->user()->id)) {
             abort(403, 'Unauthorized.');
         }
 
@@ -1142,18 +1137,24 @@ xmlns="http://www.w3.org/TR/REC-html40">
             'email' => 'nullable|email',
             'nohp' => 'nullable|string',
             'paspor_file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'paspor_second_file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
             'vaksin_file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'ktp_file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'kk_file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
-        $memberData = array_diff_key($validated, array_flip(['paspor_file', 'vaksin_file', 'ktp_file', 'kk_file']));
+        $memberData = array_diff_key($validated, array_flip(['paspor_file', 'paspor_second_file', 'vaksin_file', 'ktp_file', 'kk_file']));
 
         $member->update($memberData);
 
         if ($request->hasFile('paspor_file')) {
             $member->update([
                 'paspor_file' => $request->file('paspor_file')->store('documents', 'public')
+            ]);
+        }
+        if ($request->hasFile('paspor_second_file')) {
+            $member->update([
+                'paspor_second_file' => $request->file('paspor_second_file')->store('documents', 'public'),
             ]);
         }
         if ($request->hasFile('vaksin_file')) {
@@ -1175,7 +1176,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
         // Auto-update booking status_dokumen if applicable
         $booking = $member->bookings()->first();
         if ($booking) {
-            $statusDokumen = ($member->ktp_file && $member->kk_file && $member->paspor_file && $member->vaksin_file) ? 'lengkap' : 'belum_lengkap';
+            $statusDokumen = ($member->paspor_file && $member->vaksin_file) ? 'lengkap' : 'belum_lengkap';
             $booking->update(['status_dokumen' => $statusDokumen]);
         }
 
@@ -1224,12 +1225,15 @@ xmlns="http://www.w3.org/TR/REC-html40">
             abort(403);
 
         $request->validate([
-            'document_type' => 'required|in:paspor,ktp,kk,vaksin',
+            'document_type' => 'required|in:paspor,paspor_second,ktp,kk,vaksin',
             'file' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
         $member = \App\Models\JamaahMember::findOrFail($memberId);
         ManifestLock::ensureMemberEditable($member);
+        if ($role === 'agen' && !$this->agentCanAccessMember($member, $request->user()->id)) {
+            abort(403);
+        }
 
         $type = $request->document_type;
         $field = $type . '_file';
@@ -1744,16 +1748,12 @@ xmlns="http://www.w3.org/TR/REC-html40">
                 $member = $booking->jamaahMember;
                 $docsCount = 0;
                 if ($member) {
-                    if ($member->ktp_file)
-                        $docsCount++;
-                    if ($member->kk_file)
-                        $docsCount++;
                     if ($member->paspor_file)
                         $docsCount++;
                     if ($member->vaksin_file)
                         $docsCount++;
                 }
-                if ($docsCount < 4) {
+                if ($docsCount < 2) {
                     $incomplete++;
                 }
             }
@@ -1963,9 +1963,20 @@ xmlns="http://www.w3.org/TR/REC-html40">
                 ];
             }
         }
-        $packages = Package::where('is_active', true)
-            ->where('id', '!=', $order->package_id)
-            ->get();
+        $packages = Order::with('package')
+            ->withCount(['bookings as filled_pax' => fn ($q) => $q->whereNotNull('jamaah_member_id')])
+            ->where('agent_id', $order->agent_id)
+            ->where('package_id', '!=', $order->package_id)
+            ->where('status_kunci', 'open')
+            ->whereHas('package', fn ($q) => $q->where('is_active', true)->where('manifest_status', '!=', 'final'))
+            ->get()
+            ->filter(fn ($targetOrder) => $targetOrder->filled_pax < $targetOrder->total_pax)
+            ->map(fn ($targetOrder) => [
+                'id' => $targetOrder->package_id,
+                'name' => $targetOrder->package->name,
+                'price' => $targetOrder->package->price,
+                'available_seats' => $targetOrder->total_pax - $targetOrder->filled_pax,
+            ])->values();
 
         return Inertia::render('admin/isi-jamaah', [
             'order' => $order,
@@ -2040,6 +2051,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
             if ($member) {
                 $member->update($memberData);
             } else {
+                $memberData['imported_by'] = $request->user()->id;
                 $member = \App\Models\JamaahMember::create($memberData);
             }
 
@@ -2048,7 +2060,11 @@ xmlns="http://www.w3.org/TR/REC-html40">
                 $booking = Booking::find($rowData['booking_id']);
             }
 
-            $statusDokumen = ($member->ktp_file && $member->kk_file && $member->paspor_file && $member->vaksin_file) ? 'lengkap' : 'belum_lengkap';
+            if ($this->jamaahAlreadyInPackage($member, $order->package_id, $booking?->id)) {
+                return back()->withErrors(['message' => "{$member->name} sudah terdaftar pada Booking Order lain di paket yang sama."]);
+            }
+
+            $statusDokumen = ($member->paspor_file && $member->vaksin_file) ? 'lengkap' : 'belum_lengkap';
 
             if ($booking) {
                 $booking->update([
@@ -2104,69 +2120,32 @@ xmlns="http://www.w3.org/TR/REC-html40">
             return back()->withErrors(['message' => 'Paket tujuan tidak boleh sama dengan paket asal.']);
         }
 
-        $targetPackage = Package::findOrFail($targetPackageId);
-        if ($targetPackage->available_seats <= 0) {
-            return back()->withErrors(['message' => 'Paket tujuan sudah penuh. Tidak ada seat tersisa.']);
+        $targetOrder = Order::withCount(['bookings as filled_pax' => fn ($q) => $q->whereNotNull('jamaah_member_id')])
+            ->where('package_id', $targetPackageId)
+            ->where('agent_id', $sourceOrder->agent_id)
+            ->where('status_kunci', 'open')
+            ->first();
+        if (!$targetOrder) {
+            return back()->withErrors(['message' => 'Agen belum memiliki Booking Order terbuka pada paket tujuan.']);
+        }
+        if ($targetOrder->filled_pax >= $targetOrder->total_pax) {
+            return back()->withErrors(['message' => 'Booking Order tujuan sudah terisi penuh.']);
+        }
+        if ($booking->jamaahMember && $this->jamaahAlreadyInPackage($booking->jamaahMember, (int) $targetPackageId, $booking->id)) {
+            return back()->withErrors(['message' => 'Jamaah yang sama sudah terdaftar pada paket tujuan.']);
         }
 
-        // DB Transaction to ensure atomicity
-        \DB::transaction(function () use ($booking, $sourceOrder, $targetPackageId, $request) {
-            // Find or create an open order for this agent under the target package
-            $targetOrder = Order::where('package_id', $targetPackageId)
-                ->where('agent_id', $sourceOrder->agent_id)
-                ->where('status_kunci', 'open')
-                ->first();
-
-            if (!$targetOrder) {
-                // Get agent user
-                $agent = User::findOrFail($sourceOrder->agent_id);
-
-                // Create a new target order
-                $targetOrder = Order::create([
-                    'package_id' => $targetPackageId,
-                    'agent_id' => $sourceOrder->agent_id,
-                    'total_pax' => 0, // Will be incremented to 1 right after
-                    'keterangan' => 'Pindahan dari paket ' . ($sourceOrder->package ? $sourceOrder->package->name : ''),
-                    'status_kunci' => 'open',
-                ]);
-
-                // Create a group user for the new order
-                $groupUser = User::create([
-                    'name' => "Rombongan " . $agent->name . " - Order #" . $targetOrder->id,
-                    'email' => "order_" . $targetOrder->id . "_" . time() . "@annamirohtravel.com",
-                    'password' => \Illuminate\Support\Facades\Hash::make('12345678'),
-                    'role' => 'user',
-                    'agent_id' => $sourceOrder->agent_id,
-                ]);
-
-                $targetOrder->update(['user_id' => $groupUser->id]);
-            }
-
-            // Increment the target order's total_pax by 1 (using save to trigger Eloquent updating hooks)
-            $targetOrder->total_pax = $targetOrder->total_pax + 1;
-            $targetOrder->save();
-
-            // Decrement the source order's total_pax by 1
-            $sourceOrder->total_pax = max(0, $sourceOrder->total_pax - 1);
-            $sourceOrder->save();
-
-            // Move the booking to the target order and target package and target group user
+        \DB::transaction(function () use ($booking, $targetOrder, $targetPackageId) {
             $booking->update([
                 'order_id' => $targetOrder->id,
                 'package_id' => $targetPackageId,
                 'user_id' => $targetOrder->user_id,
             ]);
 
-            // Update the jamaah member's user_id (group user)
-            if ($booking->jamaahMember) {
+            if ($booking->jamaahMember && $targetOrder->user_id) {
                 $booking->jamaahMember->update([
                     'user_id' => $targetOrder->user_id,
                 ]);
-            }
-
-            // Delete the source order if its total_pax has reached 0
-            if ($sourceOrder->total_pax <= 0) {
-                $sourceOrder->delete();
             }
         });
 
@@ -2227,17 +2206,15 @@ xmlns="http://www.w3.org/TR/REC-html40">
     public function importJamaah(Request $request)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'admin_manifest'])) {
+        if (!in_array($role, ['admin', 'admin_manifest', 'agen'], true)) {
             abort(403);
         }
 
-        $request->validate([
-            'package_id' => 'required|exists:packages,id',
+        $validated = $request->validate([
             'file' => 'required|file|mimes:xlsx,xls,csv,txt|max:10240',
+            'duplicate_action' => 'nullable|in:ask,use,update,skip',
         ]);
 
-        $packageId = $request->input('package_id');
-        ManifestLock::ensurePackageEditable((int) $packageId);
         $file = $request->file('file');
         $path = $file->getRealPath();
 
@@ -2309,11 +2286,9 @@ xmlns="http://www.w3.org/TR/REC-html40">
                 return back()->withErrors(['message' => 'Format kolom Excel tidak sesuai. Pastikan terdapat minimal kolom "NAME" atau "NAMA".']);
             }
 
-            $agents = User::where('role', 'agen')->get();
-
-            \Illuminate\Support\Facades\DB::beginTransaction();
-
-            $importedCount = 0;
+            $prepared = [];
+            $sameOwnerDuplicates = [];
+            $seenInFile = [];
 
             foreach ($rows as $rowIndex => $row) {
                 if ($rowIndex <= $firstRowIndex) {
@@ -2327,7 +2302,6 @@ xmlns="http://www.w3.org/TR/REC-html40">
 
                 $agentVal = isset($headers['agent']) ? trim($row[$headers['agent']]) : null;
                 $sexVal = isset($headers['sex']) ? trim($row[$headers['sex']]) : null;
-                $ageVal = isset($headers['age']) ? trim($row[$headers['age']]) : null;
                 $placeVal = isset($headers['place']) ? trim($row[$headers['place']]) : null;
                 $dateVal = isset($headers['date']) ? trim($row[$headers['date']]) : null;
                 $passportVal = isset($headers['passport']) ? trim($row[$headers['passport']]) : null;
@@ -2338,16 +2312,6 @@ xmlns="http://www.w3.org/TR/REC-html40">
                 $vmVal = isset($headers['vm']) ? trim($row[$headers['vm']]) : null;
                 $vpVal = isset($headers['vp']) ? trim($row[$headers['vp']]) : null;
 
-                // Match agent
-                $agent = null;
-                if (!empty($agentVal)) {
-                    $agentNameClean = strtolower(trim($agentVal));
-                    $agent = $agents->first(function ($a) use ($agentNameClean) {
-                        return str_contains(strtolower($a->name), $agentNameClean) || str_contains($agentNameClean, strtolower($a->name));
-                    });
-                }
-
-                // Determine gender
                 $gender = null;
                 if (!empty($sexVal)) {
                     $sexLower = strtolower($sexVal);
@@ -2358,104 +2322,191 @@ xmlns="http://www.w3.org/TR/REC-html40">
                     }
                 }
 
-                // Parse birth date and passport dates
                 $birthDate = $this->parseExcelDate($dateVal);
                 $pasporIssued = $this->parseExcelDate($issuedVal);
                 $pasporExpiry = $this->parseExcelDate($expiredVal);
-
-                // Locate or create user account for jamaah
-                $member = \App\Models\JamaahMember::where('name', $nameVal)->first();
-                if ($member) {
-                    $user = $member->user;
-                } else {
-                    $emailClean = preg_replace('/[^a-z0-9]/', '', strtolower($nameVal));
-                    $email = $emailClean . '_' . mt_rand(1000, 9999) . '@annamirah.com';
-
-                    $user = User::create([
-                        'name' => $nameVal,
-                        'email' => $email,
-                        'password' => \Illuminate\Support\Facades\Hash::make('12345678'),
-                        'role' => 'user',
-                        'agent_id' => $agent ? $agent->id : null,
-                    ]);
-
-                    $user->profile()->create([
-                        'no_wa' => '-',
-                        'tempat_lahir' => $placeVal,
-                        'tgl_lahir' => $birthDate,
-                        'alamat' => '-',
-                    ]);
+                $passportNormalized = strtoupper(preg_replace('/\s+/', '', (string) $passportVal));
+                $identityKey = $passportNormalized !== ''
+                    ? 'passport:'.$passportNormalized
+                    : 'person:'.mb_strtolower(trim($nameVal)).'|'.($birthDate ?: '-');
+                if (isset($seenInFile[$identityKey])) {
+                    continue;
                 }
+                $seenInFile[$identityKey] = true;
 
                 $memberData = [
-                    'user_id' => $user->id,
                     'name' => $nameVal,
                     'jenis_kelamin' => $gender,
-                    'tempat_lahir' => $placeVal ?: ($member ? $member->tempat_lahir : null),
-                    'tgl_lahir' => $birthDate ?: ($member ? $member->tgl_lahir : null),
-                    'nomor_paspor' => $passportVal ?: ($member ? $member->nomor_paspor : null),
-                    'paspor_issued' => $pasporIssued ?: ($member ? $member->paspor_issued : null),
-                    'paspor_expiry' => $pasporExpiry ?: ($member ? $member->paspor_expiry : null),
-                    'paspor_office' => $officeVal ?: ($member ? $member->paspor_office : null),
-                    'pp' => $ppVal ?: ($member ? $member->pp : '-'),
-                    'vm' => $vmVal ?: ($member ? $member->vm : '-'),
-                    'vp' => $vpVal ?: ($member ? $member->vp : '-'),
+                    'tempat_lahir' => $placeVal ?: null,
+                    'tgl_lahir' => $birthDate,
+                    'nomor_paspor' => $passportVal ?: null,
+                    'paspor_issued' => $pasporIssued,
+                    'paspor_expiry' => $pasporExpiry,
+                    'paspor_office' => $officeVal ?: null,
+                    'pp' => $ppVal ?: '-',
+                    'vm' => $vmVal ?: '-',
+                    'vp' => $vpVal ?: '-',
+                    'import_agent_name' => $agentVal ?: null,
                 ];
-
-                if ($member) {
-                    $member->update($memberData);
-                } else {
-                    $member = \App\Models\JamaahMember::create($memberData);
-                }
-
-                // Handle Booking and Order
-                $booking = Booking::where('jamaah_member_id', $member->id)->where('package_id', $packageId)->first();
-                if (!$booking) {
-                    $orderId = null;
-                    if ($agent) {
-                        $order = Order::where('package_id', $packageId)->where('agent_id', $agent->id)->first();
-                        if ($order) {
-                            $order->increment('total_pax');
-                        } else {
-                            $order = Order::create([
-                                'package_id' => $packageId,
-                                'agent_id' => $agent->id,
-                                'user_id' => $agent->id,
-                                'total_pax' => 1,
-                                'keterangan' => 'Imported via Excel Manifest',
-                                'status_kunci' => 'open',
-                            ]);
-                        }
-                        $orderId = $order->id;
+                $duplicates = $this->findJamaahDuplicates($passportNormalized, $nameVal, $birthDate);
+                $sameOwner = $duplicates->first(function ($member) use ($request, $role) {
+                    if ($role === 'agen') {
+                        return (int) $member->imported_by === (int) $request->user()->id
+                            || (int) $member->user?->agent_id === (int) $request->user()->id
+                            || (int) $member->user_id === (int) $request->user()->id;
                     }
 
-                    Booking::create([
-                        'order_id' => $orderId,
-                        'user_id' => $user->id,
-                        'jamaah_member_id' => $member->id,
-                        'package_id' => $packageId,
-                        'status_pembayaran' => 'pending',
-                        'status_dokumen' => 'belum_lengkap',
-                    ]);
-                }
+                    return in_array($member->importer?->role, ['admin', 'admin_manifest'], true)
+                        || (!$member->imported_by && !$member->user?->agent_id);
+                });
+                $agentOwnedDuplicate = $duplicates->first(fn ($member) => $member->importer?->role === 'agen' || $member->user?->agent_id);
 
-                $importedCount++;
+                if (in_array($role, ['admin', 'admin_manifest'], true) && $agentOwnedDuplicate) {
+                    $prepared[] = ['action' => 'reuse', 'member' => $agentOwnedDuplicate, 'data' => $memberData];
+                    continue;
+                }
+                if ($sameOwner) {
+                    $sameOwnerDuplicates[] = $nameVal;
+                }
+                $prepared[] = ['action' => $sameOwner ? 'duplicate' : 'create', 'member' => $sameOwner, 'data' => $memberData];
             }
 
-            \Illuminate\Support\Facades\DB::commit();
+            $duplicateAction = $validated['duplicate_action'] ?? 'ask';
+            if ($sameOwnerDuplicates && $duplicateAction === 'ask') {
+                $sample = implode(', ', array_slice(array_unique($sameOwnerDuplicates), 0, 5));
+                return back()->withErrors(['message' => 'Ditemukan '.count($sameOwnerDuplicates).' data milik Anda yang sudah ada ('.$sample.'). Pilih Gunakan Data Lama, Perbarui, atau Lewati lalu import kembali.']);
+            }
 
-            return back()->with('success', "Berhasil mengimpor {$importedCount} jamaah.");
+            $batch = (string) \Illuminate\Support\Str::uuid();
+            $counts = ['created' => 0, 'updated' => 0, 'reused' => 0, 'skipped' => 0];
+            \Illuminate\Support\Facades\DB::transaction(function () use ($prepared, $duplicateAction, $request, $role, $batch, &$counts) {
+                foreach ($prepared as $item) {
+                    if ($item['action'] === 'reuse' || ($item['action'] === 'duplicate' && $duplicateAction === 'use')) {
+                        $counts['reused']++;
+                        continue;
+                    }
+                    if ($item['action'] === 'duplicate' && $duplicateAction === 'skip') {
+                        $counts['skipped']++;
+                        continue;
+                    }
+                    if ($item['action'] === 'duplicate' && $duplicateAction === 'update') {
+                        $item['member']->update(array_filter($item['data'], fn ($value) => $value !== null && $value !== ''));
+                        $counts['updated']++;
+                        continue;
+                    }
+
+                    $emailBase = preg_replace('/[^a-z0-9]/', '', strtolower($item['data']['name'])) ?: 'jamaah';
+                    $user = User::create([
+                        'name' => $item['data']['name'],
+                        'email' => $emailBase.'_'.strtolower(\Illuminate\Support\Str::random(8)).'@annamirah.com',
+                        'password' => \Illuminate\Support\Facades\Hash::make('12345678'),
+                        'role' => 'user',
+                        'agent_id' => $role === 'agen' ? $request->user()->id : null,
+                    ]);
+                    $user->profile()->create([
+                        'no_wa' => '-',
+                        'tempat_lahir' => $item['data']['tempat_lahir'],
+                        'tgl_lahir' => $item['data']['tgl_lahir'],
+                        'alamat' => '-',
+                    ]);
+                    $user->jamaahMembers()->create($item['data'] + [
+                        'imported_by' => $request->user()->id,
+                        'import_batch' => $batch,
+                    ]);
+                    $counts['created']++;
+                }
+            });
+
+            return back()->with('success', "Import database selesai: {$counts['created']} baru, {$counts['updated']} diperbarui, {$counts['reused']} memakai data lama, {$counts['skipped']} dilewati. Tidak ada booking atau manifest yang dibuat.");
 
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\DB::rollBack();
             return back()->withErrors(['message' => 'Gagal mengimpor file Excel: ' . $e->getMessage()]);
         }
+    }
+
+    public function downloadJamaahImportTemplate()
+    {
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->fromArray(['AGENT', 'NAME', 'SEX', 'AGE', 'PLACE', 'DATE', 'PASSPORT', 'ISSUED', 'EXPIRED', 'OFFICE', 'PP', 'VM', 'VP'], null, 'A1');
+        $sheet->fromArray(['Nama agen hanya disimpan', 'CONTOH JAMAAH', 'L', '', 'Pasuruan', '01/01/1990', 'A1234567', '01/01/2025', '01/01/2030', 'SURABAYA', '-', '-', '-'], null, 'A2');
+        $sheet->getStyle('A1:M1')->getFont()->setBold(true)->setSize(12);
+        $sheet->getStyle('A2:M2')->getFont()->setSize(12);
+        foreach (range('A', 'M') as $column) {
+            $sheet->getColumnDimension($column)->setAutoSize(true);
+        }
+        $temporary = tempnam(sys_get_temp_dir(), 'template_jamaah_').'.xlsx';
+        (new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet))->save($temporary);
+
+        return response()->download($temporary, 'template_import_database_jamaah.xlsx')->deleteFileAfterSend(true);
+    }
+
+    private function findJamaahDuplicates(string $passport, string $name, ?string $birthDate)
+    {
+        if ($passport === '' && !$birthDate) {
+            return collect();
+        }
+
+        return \App\Models\JamaahMember::with(['importer:id,role', 'user:id,agent_id'])
+            ->where(function ($query) use ($passport, $name, $birthDate) {
+                if ($passport !== '') {
+                    $query->whereRaw("UPPER(REPLACE(nomor_paspor, ' ', '')) = ?", [$passport]);
+                }
+                if ($birthDate) {
+                    $method = $passport !== '' ? 'orWhere' : 'where';
+                    $query->{$method}(fn ($q) => $q->whereRaw('LOWER(name) = ?', [mb_strtolower(trim($name))])->whereDate('tgl_lahir', $birthDate));
+                }
+            })->get();
+    }
+
+    private function scopeJamaahForAgent($query, int $agentId): void
+    {
+        $query->where(function ($scope) use ($agentId) {
+            $scope->where('imported_by', $agentId)
+                ->orWhereHas('user', fn ($q) => $q->where('agent_id', $agentId)->orWhere('id', $agentId))
+                ->orWhereHas('bookings.order', fn ($q) => $q->where('agent_id', $agentId));
+        });
+    }
+
+    private function agentCanAccessMember(\App\Models\JamaahMember $member, int $agentId): bool
+    {
+        return (int) $member->imported_by === $agentId
+            || (int) $member->user?->agent_id === $agentId
+            || (int) $member->user_id === $agentId
+            || $member->bookings()->whereHas('order', fn ($q) => $q->where('agent_id', $agentId))->exists();
+    }
+
+    private function jamaahAlreadyInPackage(\App\Models\JamaahMember $member, int $packageId, ?int $exceptBookingId = null): bool
+    {
+        $query = Booking::where('package_id', $packageId)
+            ->when($exceptBookingId, fn ($q) => $q->where('id', '!=', $exceptBookingId))
+            ->whereHas('jamaahMember', function ($q) use ($member) {
+                $passport = strtoupper(preg_replace('/\s+/', '', (string) $member->nomor_paspor));
+                $q->where(function ($identity) use ($member, $passport) {
+                    if ($passport !== '') {
+                        $identity->whereRaw("UPPER(REPLACE(nomor_paspor, ' ', '')) = ?", [$passport]);
+                    }
+                    if ($member->tgl_lahir) {
+                        $method = $passport !== '' ? 'orWhere' : 'where';
+                        $identity->{$method}(fn ($person) => $person->whereRaw('LOWER(name) = ?', [mb_strtolower(trim($member->name))])->whereDate('tgl_lahir', $member->tgl_lahir));
+                    }
+                });
+            });
+
+        return ($member->nomor_paspor || $member->tgl_lahir) && $query->exists();
     }
 
     private function parseExcelDate($dateStr)
     {
         if (empty($dateStr))
             return null;
+        if (is_numeric($dateStr)) {
+            try {
+                return \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((float) $dateStr)->format('Y-m-d');
+            } catch (\Throwable $e) {
+                return null;
+            }
+        }
         $dateStr = trim($dateStr);
 
         // Translate Indonesian month names to English

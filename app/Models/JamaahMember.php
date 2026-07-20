@@ -11,6 +11,9 @@ class JamaahMember extends Model
 
     protected $fillable = [
         'user_id',
+        'imported_by',
+        'import_agent_name',
+        'import_batch',
         'name',
         'nik',
         'jenis_kelamin',
@@ -18,6 +21,7 @@ class JamaahMember extends Model
         'tgl_lahir',
         'hubungan_keluarga',
         'paspor_file',
+        'paspor_second_file',
         'ktp_file',
         'kk_file',
         'vaksin_file',
@@ -40,5 +44,10 @@ class JamaahMember extends Model
     public function bookings()
     {
         return $this->hasMany(Booking::class);
+    }
+
+    public function importer()
+    {
+        return $this->belongsTo(User::class, 'imported_by');
     }
 }

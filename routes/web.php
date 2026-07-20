@@ -77,7 +77,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('admin/jamaah', [App\Http\Controllers\AdminController::class, 'jamaah'])->middleware('role:admin,admin_manifest,agen')->name('admin.jamaah');
     Route::get('admin/jamaah/export', [App\Http\Controllers\AdminController::class, 'exportJamaah'])->middleware('role:admin,admin_manifest,agen')->name('admin.jamaah.export');
-    Route::post('admin/jamaah/import', [App\Http\Controllers\AdminController::class, 'importJamaah'])->middleware('role:admin,admin_manifest')->name('admin.jamaah.import');
+    Route::post('admin/jamaah/import', [App\Http\Controllers\AdminController::class, 'importJamaah'])->middleware('role:admin,admin_manifest,agen')->name('admin.jamaah.import');
+    Route::get('admin/jamaah/import-template', [App\Http\Controllers\AdminController::class, 'downloadJamaahImportTemplate'])->middleware('role:admin,admin_manifest,agen')->name('admin.jamaah.import-template');
     Route::get('admin/jamaah-database', [App\Http\Controllers\AdminController::class, 'jamaahDatabase'])->middleware('role:admin,admin_manifest,agen')->name('admin.jamaah-database');
     Route::get('admin/jamaah/{id}/members', [App\Http\Controllers\AdminController::class, 'manageMembers'])->name('admin.jamaah.members');
     Route::post('admin/jamaah', [App\Http\Controllers\AdminController::class, 'storeJamaah'])->name('admin.jamaah.store');

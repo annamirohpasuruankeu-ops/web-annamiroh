@@ -167,7 +167,9 @@ class ManifestFinalizationController extends Controller
 
         $version = ManifestVersion::where('package_id', $package->id)->where('status', 'final')->latest('version')->firstOrFail();
         $snapshot = $version->snapshot;
-        $filename = 'manifest_'.preg_replace('/[^A-Za-z0-9_-]/', '_', $package->code ?: $package->name).'_v'.$version->version.'.xls';
+        $filename = 'manifest_'.preg_replace('/[^A-Za-z0-9_-]/', '_', $package->code ?: $package->name).'_v'.$version->version.'.xlsx';
+        $temporary = tempnam(sys_get_temp_dir(), 'manifest_final_').'.xlsx';
+        (new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($this->renderExcel($snapshot)))->save($temporary);
 
         ManifestActivity::create([
             'package_id' => $package->id,
@@ -177,10 +179,9 @@ class ManifestFinalizationController extends Controller
             'file_name' => $filename,
         ]);
 
-        return response($this->renderExcel($snapshot))
-            ->header('Content-Type', 'application/vnd.ms-excel; charset=UTF-8')
-            ->header('Content-Disposition', "attachment; filename=\"{$filename}\"")
-            ->header('Cache-Control', 'no-store, no-cache, must-revalidate');
+        return response()->download($temporary, $filename, [
+            'Cache-Control' => 'no-store, no-cache, must-revalidate',
+        ])->deleteFileAfterSend(true);
     }
 
     private function buildSnapshot(Package $package): array
@@ -212,7 +213,10 @@ class ManifestFinalizationController extends Controller
                 'vm' => $member?->vm,
                 'vp' => $member?->vp,
                 'passport_file' => $member?->paspor_file,
+                'passport_second_file' => $member?->paspor_second_file,
                 'vaccine_file' => $member?->vaksin_file,
+                'ktp_file' => $member?->ktp_file,
+                'kk_file' => $member?->kk_file,
             ];
         })->sortBy(fn ($row) => [$row['agent_name'], $row['name']])->values()->all();
 
@@ -227,13 +231,18 @@ class ManifestFinalizationController extends Controller
         ];
     }
 
-    private function renderExcel(array $snapshot): string
+    private function renderExcel(array $snapshot): \PhpOffice\PhpSpreadsheet\Spreadsheet
     {
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Manifest Final');
         $date = !empty($snapshot['package']['departure_date'])
             ? date('d/m/Y', strtotime($snapshot['package']['departure_date']))
             : '-';
-        $escape = fn ($value) => htmlspecialchars((string) ($value ?? ''), ENT_QUOTES, 'UTF-8');
-        $html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><style>table{border-collapse:collapse;font-family:Arial,sans-serif;font-size:12pt}th{background:#f2f2f2;font-weight:bold;text-align:center;border:1px solid #000;padding:5px;font-size:12pt}td{border:1px solid #000;padding:5px;vertical-align:middle;font-size:12pt}.center{text-align:center}.title{font-weight:bold;border:0;font-size:12pt}.blank{border:0}</style></head><body><table><tr><td class="title" colspan="16">Tanggal Keberangkatan: '.$escape($date).'</td></tr><tr><td class="blank" colspan="16">&nbsp;</td></tr><tr><th>No</th><th>Nama Agen (Urut)</th><th>Nama Lengkap</th><th>Sex</th><th>Age</th><th>Place</th><th>Date Birth</th><th>No Paspor</th><th>Issued</th><th>Expired</th><th>Office</th><th>PP</th><th>VM</th><th>VP</th><th>Link Paspor</th><th>Link Vaksin</th></tr>';
+        $sheet->mergeCells('A1:S1');
+        $sheet->setCellValue('A1', 'Tanggal Keberangkatan: '.$date);
+        $headers = ['No', 'Nama Agen (Urut)', 'Nama Lengkap', 'Sex', 'Age', 'Place', 'Date Birth', 'No Paspor', 'Issued', 'Expired', 'Office', 'PP', 'VM', 'VP', 'Paspor Utama', 'Paspor Lembar 2', 'Vaksin', 'KTP', 'KK'];
+        $sheet->fromArray($headers, null, 'A3');
         $counters = [];
         foreach ($snapshot['jamaah'] as $index => $row) {
             $agent = $row['agent_name'] ?: 'Pusat/Mandiri';
@@ -242,11 +251,39 @@ class ManifestFinalizationController extends Controller
             $issued = $row['passport_issued'] ? date('d/m/Y', strtotime($row['passport_issued'])) : '';
             $expiry = $row['passport_expiry'] ? date('d/m/Y', strtotime($row['passport_expiry'])) : '';
             $age = $row['birth_date'] ? date_diff(date_create($row['birth_date']), date_create('today'))->y : '';
-            $passportLink = $row['passport_file'] ? '<a href="'.$escape(asset('storage-file/'.$row['passport_file'])).'">Link Paspor</a>' : '-';
-            $vaccineLink = $row['vaccine_file'] ? '<a href="'.$escape(asset('storage-file/'.$row['vaccine_file'])).'">Link Vaksin</a>' : '-';
-            $html .= '<tr><td class="center">'.($index + 1).'</td><td>'.$escape($agent.' ('.$counters[$agent].')').'</td><td>'.$escape($row['name']).'</td><td class="center">'.$escape($row['sex']).'</td><td class="center">'.$escape($age).'</td><td>'.$escape($row['birth_place']).'</td><td class="center">'.$escape($birth).'</td><td>'.$escape($row['passport_number']).'</td><td class="center">'.$escape($issued).'</td><td class="center">'.$escape($expiry).'</td><td>'.$escape($row['passport_office']).'</td><td class="center">'.$escape($row['pp'] ?: '-').'</td><td class="center">'.$escape($row['vm'] ?: '-').'</td><td class="center">'.$escape($row['vp'] ?: '-').'</td><td class="center">'.$passportLink.'</td><td class="center">'.$vaccineLink.'</td></tr>';
+            $excelRow = $index + 4;
+            $sheet->fromArray([
+                $index + 1, $agent.' ('.$counters[$agent].')', $row['name'], $row['sex'], $age,
+                $row['birth_place'], $birth, $row['passport_number'], $issued, $expiry,
+                $row['passport_office'], $row['pp'] ?: '-', $row['vm'] ?: '-', $row['vp'] ?: '-',
+                '-', '-', '-', '-', '-',
+            ], null, 'A'.$excelRow);
+            $documents = [
+                'O' => $row['passport_file'] ?? null,
+                'P' => $row['passport_second_file'] ?? null,
+                'Q' => $row['vaccine_file'] ?? null,
+                'R' => $row['ktp_file'] ?? null,
+                'S' => $row['kk_file'] ?? null,
+            ];
+            foreach ($documents as $column => $path) {
+                if (!$path) {
+                    continue;
+                }
+                $cell = $sheet->getCell($column.$excelRow);
+                $cell->setValue('Buka Berkas');
+                $cell->getHyperlink()->setUrl(asset('storage-file/'.$path));
+                $sheet->getStyle($column.$excelRow)->getFont()->setUnderline(true)->getColor()->setRGB('0563C1');
+            }
+        }
+        $lastRow = max(3, count($snapshot['jamaah']) + 3);
+        $sheet->getStyle('A1:S'.$lastRow)->getFont()->setName('Arial')->setSize(12);
+        $sheet->getStyle('A3:S3')->getFont()->setBold(true);
+        $sheet->getStyle('A3:S'.$lastRow)->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        $sheet->getStyle('A3:S3')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB('F2F2F2');
+        foreach (range('A', 'S') as $column) {
+            $sheet->getColumnDimension($column)->setAutoSize(true);
         }
 
-        return $html.'</table></body></html>';
+        return $spreadsheet;
     }
 }

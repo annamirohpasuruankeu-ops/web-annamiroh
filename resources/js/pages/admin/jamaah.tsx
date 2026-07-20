@@ -7,19 +7,11 @@ import { useState } from 'react';
 import {
     BookOpen,
     Search,
-    Briefcase,
     Users,
-    FileText,
-    CheckCircle2,
     Edit3,
-    ShieldCheck,
-    ShieldOff,
     X,
-    Calendar,
-    ClipboardList,
     Globe,
     UserCheck,
-    FileUp,
     FileSpreadsheet,
 } from 'lucide-react';
 import Pagination from '@/components/pagination';
@@ -58,7 +50,6 @@ interface JamaahMember {
 
 export default function Jamaahs({
     jamaahs,
-    packages,
     activePackages,
     agents,
     totalJamaahCount,
@@ -67,7 +58,6 @@ export default function Jamaahs({
     auth,
 }: PageProps<{
     jamaahs: any;
-    packages: any[];
     activePackages: any[];
     agents: any[];
     totalJamaahCount: number;
@@ -85,11 +75,6 @@ export default function Jamaahs({
     const [editingMember, setEditingMember] = useState<JamaahMember | null>(
         null,
     );
-    const [showImportModal, setShowImportModal] = useState(false);
-    const importForm = useForm({
-        package_id: '',
-        file: null as File | null,
-    });
 
     const packageOptions = [
         {
@@ -203,17 +188,6 @@ export default function Jamaahs({
         window.location.href = `/admin/jamaah/export${queryString ? '?' + queryString : ''}`;
     };
 
-    const handleImportSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        importForm.post('/admin/jamaah/import', {
-            forceFormData: true,
-            onSuccess: () => {
-                setShowImportModal(false);
-                importForm.reset();
-            },
-        });
-    };
-
     return (
         <div className="mx-auto min-h-screen w-full max-w-full bg-slate-50 p-6 font-sans md:p-8">
             <Head title="Data Manifest Jamaah" />
@@ -231,15 +205,6 @@ export default function Jamaahs({
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
-                    {auth?.user?.role !== 'agen' && (
-                        <Button
-                            onClick={() => setShowImportModal(true)}
-                            className="flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-xs font-extrabold text-white shadow-md transition-all hover:bg-emerald-700"
-                        >
-                            <FileUp size={16} />
-                            Import Excel
-                        </Button>
-                    )}
                     <Button
                         onClick={handleExportExcel}
                         className="flex items-center gap-2 rounded-xl bg-emerald-700 px-5 py-2.5 text-xs font-extrabold text-white shadow-md transition-all hover:bg-emerald-800"
@@ -924,191 +889,6 @@ export default function Jamaahs({
                                     className="rounded-xl bg-emerald-600 font-extrabold text-white shadow-md hover:bg-emerald-700"
                                 >
                                     Simpan Perubahan
-                                </Button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-            {/* Import Modal */}
-            {showImportModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
-                    <div className="w-full max-w-lg animate-in overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-2xl duration-200 fade-in zoom-in">
-                        <div className="flex items-center justify-between bg-emerald-700 p-6 text-white">
-                            <div>
-                                <h3 className="flex items-center gap-2 text-lg font-black tracking-tight">
-                                    <FileUp size={22} />
-                                    Import Manifest Jamaah
-                                </h3>
-                                <p className="mt-1 text-xs font-bold text-emerald-100">
-                                    Unggah file Excel manifest untuk
-                                    mendaftarkan jamaah ke paket tertentu.
-                                </p>
-                            </div>
-                            <button
-                                onClick={() => {
-                                    setShowImportModal(false);
-                                    importForm.reset();
-                                }}
-                                className="rounded-xl bg-emerald-800/40 p-1.5 text-white transition-all hover:text-emerald-200"
-                            >
-                                <X size={20} />
-                            </button>
-                        </div>
-
-                        <form
-                            onSubmit={handleImportSubmit}
-                            className="space-y-6 p-6"
-                        >
-                            {importForm.errors.message && (
-                                <div className="flex items-center gap-2 rounded-xl border-l-4 border-rose-600 bg-rose-50 p-4 text-xs font-bold text-rose-800">
-                                    <span>⚠️</span> {importForm.errors.message}
-                                </div>
-                            )}
-
-                            <div>
-                                <Label className="mb-2 block text-xs font-extrabold text-slate-700">
-                                    Pilih Paket Keberangkatan
-                                </Label>
-                                <select
-                                    required
-                                    value={importForm.data.package_id}
-                                    onChange={(e) =>
-                                        importForm.setData(
-                                            'package_id',
-                                            e.target.value,
-                                        )
-                                    }
-                                    className="h-10 w-full rounded-xl border border-slate-300 bg-white px-3 text-xs font-bold text-slate-700 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                                >
-                                    <option value="">-- Pilih Paket --</option>
-                                    {(activePackages || []).map((p: any) => (
-                                        <option key={p.id} value={p.id}>
-                                            {p.name}
-                                        </option>
-                                    ))}
-                                </select>
-                                {importForm.errors.package_id && (
-                                    <span className="mt-1 block text-[10px] font-bold text-rose-600">
-                                        {importForm.errors.package_id}
-                                    </span>
-                                )}
-                            </div>
-
-                            <div>
-                                <Label className="mb-2 block text-xs font-extrabold text-slate-700">
-                                    File Excel / CSV
-                                </Label>
-                                <div className="relative rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 p-6 text-center transition-all hover:border-emerald-500">
-                                    <input
-                                        type="file"
-                                        required
-                                        accept=".xlsx,.xls,.csv"
-                                        onChange={(e) =>
-                                            importForm.setData(
-                                                'file',
-                                                e.target.files?.[0] || null,
-                                            )
-                                        }
-                                        className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
-                                    />
-                                    <div className="pointer-events-none flex flex-col items-center gap-2">
-                                        <FileSpreadsheet
-                                            className="text-slate-400 group-hover:text-emerald-500"
-                                            size={36}
-                                        />
-                                        <span className="text-xs font-bold text-slate-600">
-                                            {importForm.data.file
-                                                ? importForm.data.file.name
-                                                : 'Klik untuk memilih file excel (.xlsx, .xls, .csv)'}
-                                        </span>
-                                        <span className="text-[10px] font-bold text-slate-400">
-                                            Maksimal ukuran file: 10 MB
-                                        </span>
-                                    </div>
-                                </div>
-                                {importForm.errors.file && (
-                                    <span className="mt-1 block text-[10px] font-bold text-rose-600">
-                                        {importForm.errors.file}
-                                    </span>
-                                )}
-                            </div>
-
-                            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                                <h4 className="text-slate-705 mb-2 flex items-center gap-1.5 text-xs font-bold">
-                                    💡 Petunjuk Format Kolom:
-                                </h4>
-                                <p className="text-[10px] leading-relaxed font-bold text-slate-500">
-                                    Pastikan berkas Excel memiliki baris header
-                                    dengan nama kolom yang jelas, seperti:
-                                    <br />
-                                    <span className="text-emerald-700">
-                                        AGENT
-                                    </span>{' '}
-                                    (Agen),{' '}
-                                    <span className="text-emerald-700">
-                                        NAME
-                                    </span>{' '}
-                                    (Nama Jamaah),{' '}
-                                    <span className="text-emerald-700">
-                                        SEX
-                                    </span>{' '}
-                                    (L/P),{' '}
-                                    <span className="text-emerald-700">
-                                        PLACE
-                                    </span>
-                                    ,{' '}
-                                    <span className="text-emerald-700">
-                                        DATE
-                                    </span>{' '}
-                                    (Tgl Lahir),{' '}
-                                    <span className="text-emerald-700">
-                                        PASSPORT
-                                    </span>
-                                    ,{' '}
-                                    <span className="text-emerald-700">
-                                        ISSUED
-                                    </span>
-                                    ,{' '}
-                                    <span className="text-emerald-700">
-                                        EXPIRED
-                                    </span>
-                                    ,{' '}
-                                    <span className="text-emerald-700">
-                                        OFFICE
-                                    </span>
-                                    ,{' '}
-                                    <span className="text-emerald-700">PP</span>
-                                    ,{' '}
-                                    <span className="text-emerald-700">VM</span>
-                                    ,{' '}
-                                    <span className="text-emerald-700">VP</span>
-                                    .
-                                </p>
-                            </div>
-
-                            <div className="flex justify-end gap-3 border-t border-slate-100 pt-4">
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={() => {
-                                        setShowImportModal(false);
-                                        importForm.reset();
-                                    }}
-                                    className="rounded-xl font-bold"
-                                    disabled={importForm.processing}
-                                >
-                                    Batal
-                                </Button>
-                                <Button
-                                    type="submit"
-                                    disabled={importForm.processing}
-                                    className="rounded-xl bg-emerald-600 font-extrabold text-white shadow-md hover:bg-emerald-700"
-                                >
-                                    {importForm.processing
-                                        ? 'Mengimpor...'
-                                        : 'Mulai Import'}
                                 </Button>
                             </div>
                         </form>

@@ -98,6 +98,11 @@ export default function JamaahMembers({ jamaah }: PageProps<{ jamaah: any }>) {
         { id: 'ktp', title: 'Kartu Tanda Penduduk (KTP)', field: 'ktp_file' },
         { id: 'kk', title: 'Kartu Keluarga (KK)', field: 'kk_file' },
         { id: 'paspor', title: 'Paspor (Opsional)', field: 'paspor_file' },
+        {
+            id: 'paspor_second',
+            title: 'Paspor Lembar Kedua (Opsional)',
+            field: 'paspor_second_file',
+        },
         { id: 'vaksin', title: 'Sertifikat Vaksin', field: 'vaksin_file' },
     ];
 

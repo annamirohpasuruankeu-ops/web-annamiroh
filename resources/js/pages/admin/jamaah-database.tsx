@@ -7,12 +7,13 @@ import { useState } from 'react';
 import {
     Users,
     Search,
-    CheckCircle2,
     Edit3,
     X,
-    Calendar,
     Globe,
     UserCheck,
+    FileUp,
+    Download,
+    FileSpreadsheet,
 } from 'lucide-react';
 import Pagination from '@/components/pagination';
 import { router } from '@inertiajs/react';
@@ -36,6 +37,9 @@ interface JamaahMember {
     vaksin_file: string | null;
     ktp_file: string | null;
     kk_file: string | null;
+    paspor_second_file: string | null;
+    import_agent_name?: string | null;
+    importer?: { name: string; role: string } | null;
     user?: {
         name: string;
         role?: string;
@@ -50,14 +54,17 @@ export default function JamaahDatabase({
     totalJamaahCount,
     passportFilledCount,
     filters,
+    canImport,
 }: PageProps<{
     jamaahs: any;
     totalJamaahCount: number;
     passportFilledCount: number;
     filters?: any;
+    canImport: boolean;
 }>) {
     const [search, setSearch] = useState(filters?.search || '');
     const [showModal, setShowModal] = useState(false);
+    const [showImportModal, setShowImportModal] = useState(false);
     const [editingMember, setEditingMember] = useState<JamaahMember | null>(
         null,
     );
@@ -80,7 +87,13 @@ export default function JamaahDatabase({
         vaksin_file: null as File | null,
         ktp_file: null as File | null,
         kk_file: null as File | null,
+        paspor_second_file: null as File | null,
     });
+    const importForm = useForm({
+        file: null as File | null,
+        duplicate_action: 'ask',
+    });
+    const importMessage = (importForm.errors as Record<string, string>).message;
 
     // Calculate age based on date of birth
     const calculateAge = (dobString: string) => {
@@ -115,6 +128,7 @@ export default function JamaahDatabase({
             vaksin_file: null,
             ktp_file: null,
             kk_file: null,
+            paspor_second_file: null,
         });
         setShowModal(true);
     };
@@ -141,6 +155,18 @@ export default function JamaahDatabase({
         );
     };
 
+    const submitImport = (e: React.FormEvent) => {
+        e.preventDefault();
+        importForm.post('/admin/jamaah/import', {
+            forceFormData: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                setShowImportModal(false);
+                importForm.reset();
+            },
+        });
+    };
+
     return (
         <div className="mx-auto min-h-screen w-full max-w-full bg-slate-50 p-6 font-sans md:p-8">
             <Head title="Database Jamaah" />
@@ -158,7 +184,23 @@ export default function JamaahDatabase({
                     </p>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
+                    {canImport && (
+                        <>
+                            <a
+                                href="/admin/jamaah/import-template"
+                                className="inline-flex h-10 items-center gap-2 rounded-xl border border-emerald-600 bg-white px-4 text-xs font-extrabold text-emerald-700 shadow-sm hover:bg-emerald-50"
+                            >
+                                <Download size={16} /> Download Template
+                            </a>
+                            <Button
+                                onClick={() => setShowImportModal(true)}
+                                className="gap-2 rounded-xl bg-emerald-600 font-extrabold hover:bg-emerald-700"
+                            >
+                                <FileUp size={16} /> Import Database
+                            </Button>
+                        </>
+                    )}
                     <div className="relative">
                         <Search
                             className="absolute top-1/2 left-3 -translate-y-1/2 text-slate-400"
@@ -431,6 +473,16 @@ export default function JamaahDatabase({
                                                             No KK File
                                                         </span>
                                                     )}
+                                                    {j.paspor_second_file && (
+                                                        <a
+                                                            href={`/storage-file/${j.paspor_second_file}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="flex items-center gap-0.5 text-[10px] font-extrabold text-emerald-700 hover:underline"
+                                                        >
+                                                            Paspor Lembar 2
+                                                        </a>
+                                                    )}
                                                 </div>
                                             </td>
                                             <td className="px-4 py-4 font-bold text-slate-700">
@@ -440,6 +492,12 @@ export default function JamaahDatabase({
                                                 <span className="rounded border border-slate-200 bg-slate-100 px-2 py-0.5 text-[9px] font-black tracking-wider text-slate-600 uppercase">
                                                     {agentName}
                                                 </span>
+                                                {j.import_agent_name && (
+                                                    <div className="mt-1 text-[9px] font-semibold text-slate-500">
+                                                        Excel:{' '}
+                                                        {j.import_agent_name}
+                                                    </div>
+                                                )}
                                             </td>
                                             <td className="px-4 py-4 text-center">
                                                 <Button
@@ -853,6 +911,28 @@ export default function JamaahDatabase({
                                         </span>
                                     )}
                                 </div>
+                                <div>
+                                    <Label className="mb-1 block text-xs font-bold text-slate-700">
+                                        Paspor Lembar Kedua (Opsional)
+                                    </Label>
+                                    <Input
+                                        type="file"
+                                        accept=".jpg,.jpeg,.png,.pdf"
+                                        onChange={(e) =>
+                                            setData(
+                                                'paspor_second_file',
+                                                e.target.files?.[0] || null,
+                                            )
+                                        }
+                                        className="border-slate-305 cursor-pointer bg-slate-50 text-xs"
+                                    />
+                                    {editingMember.paspor_second_file &&
+                                        !data.paspor_second_file && (
+                                            <span className="mt-1 block text-[10px] font-extrabold text-emerald-600">
+                                                File tersimpan
+                                            </span>
+                                        )}
+                                </div>
                             </div>
 
                             <div className="flex justify-end gap-3 border-t border-slate-100 pt-4">
@@ -873,6 +953,106 @@ export default function JamaahDatabase({
                                     className="rounded-xl bg-emerald-600 font-extrabold text-white shadow-md hover:bg-emerald-700"
                                 >
                                     Simpan Perubahan
+                                </Button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+            {showImportModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
+                    <div className="w-full max-w-lg overflow-hidden rounded-3xl bg-white shadow-2xl">
+                        <div className="flex items-center justify-between bg-emerald-700 p-6 text-white">
+                            <div>
+                                <h3 className="flex items-center gap-2 text-lg font-black">
+                                    <FileSpreadsheet size={21} /> Import
+                                    Database Jamaah
+                                </h3>
+                                <p className="mt-1 text-xs font-bold text-emerald-100">
+                                    Hasil import belum masuk booking, paket,
+                                    atau manifest.
+                                </p>
+                            </div>
+                            <button onClick={() => setShowImportModal(false)}>
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <form onSubmit={submitImport} className="space-y-5 p-6">
+                            {importMessage && (
+                                <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-xs font-bold text-rose-700">
+                                    {importMessage}
+                                </div>
+                            )}
+                            <div>
+                                <Label className="mb-2 block text-xs font-bold">
+                                    File Excel/CSV
+                                </Label>
+                                <Input
+                                    type="file"
+                                    required
+                                    accept=".xlsx,.xls,.csv"
+                                    onChange={(e) =>
+                                        importForm.setData(
+                                            'file',
+                                            e.target.files?.[0] || null,
+                                        )
+                                    }
+                                />
+                                {importForm.errors.file && (
+                                    <p className="mt-1 text-xs text-rose-600">
+                                        {importForm.errors.file}
+                                    </p>
+                                )}
+                            </div>
+                            <div>
+                                <Label className="mb-2 block text-xs font-bold">
+                                    Jika data milik pengimpor sudah tersedia
+                                </Label>
+                                <select
+                                    value={importForm.data.duplicate_action}
+                                    onChange={(e) =>
+                                        importForm.setData(
+                                            'duplicate_action',
+                                            e.target.value,
+                                        )
+                                    }
+                                    className="h-10 w-full rounded-xl border border-slate-300 bg-white px-3 text-xs font-bold"
+                                >
+                                    <option value="ask">
+                                        Tanyakan terlebih dahulu
+                                    </option>
+                                    <option value="use">
+                                        Gunakan data lama
+                                    </option>
+                                    <option value="update">
+                                        Perbarui data lama
+                                    </option>
+                                    <option value="skip">
+                                        Lewati data duplikat
+                                    </option>
+                                </select>
+                            </div>
+                            <p className="rounded-xl bg-slate-50 p-3 text-[11px] font-semibold text-slate-600">
+                                Kolom AGENT hanya disimpan sebagai keterangan.
+                                Kepemilikan mengikuti akun yang melakukan
+                                import.
+                            </p>
+                            <div className="flex justify-end gap-3 border-t pt-4">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => setShowImportModal(false)}
+                                >
+                                    Batal
+                                </Button>
+                                <Button
+                                    type="submit"
+                                    disabled={importForm.processing}
+                                    className="bg-emerald-600 hover:bg-emerald-700"
+                                >
+                                    {importForm.processing
+                                        ? 'Mengimpor...'
+                                        : 'Mulai Import'}
                                 </Button>
                             </div>
                         </form>

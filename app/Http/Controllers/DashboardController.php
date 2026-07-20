@@ -95,7 +95,7 @@ class DashboardController extends Controller
 
         $createdCount = 0;
         foreach ($unbookedMembers as $member) {
-            $statusDokumen = ($member->ktp_file && $member->kk_file && $member->paspor_file && $member->vaksin_file) ? 'lengkap' : 'belum_lengkap';
+            $statusDokumen = ($member->paspor_file && $member->vaksin_file) ? 'lengkap' : 'belum_lengkap';
             
             Booking::create([
                 'user_id' => $user->id,
@@ -182,7 +182,7 @@ class DashboardController extends Controller
                 // Increment order's total_pax (triggers available_seats decrement in Order model boot hook)
                 $latestOrder->increment('total_pax', 1);
 
-                $statusDokumen = ($member->ktp_file && $member->kk_file && $member->paspor_file && $member->vaksin_file) ? 'lengkap' : 'belum_lengkap';
+                $statusDokumen = ($member->paspor_file && $member->vaksin_file) ? 'lengkap' : 'belum_lengkap';
 
                 \App\Models\Booking::create([
                     'user_id' => $request->user()->id,
