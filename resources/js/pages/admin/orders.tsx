@@ -29,6 +29,7 @@ interface OrderItem {
     total_pax: number;
     keterangan: string | null;
     status_kunci: 'open' | 'locked';
+    manifest_status: 'draft' | 'final';
     inputted_pax: number;
     missing_pax: number;
     incomplete_pax: number;
@@ -52,6 +53,7 @@ export default function Orders({
     totalJamaahRegistered: number;
     userRole: string;
     filters: any;
+    errors?: Record<string, string>;
 }>) {
     const [agentFilter, setAgentFilter] = useState(filters?.agent_id || '');
     const [packageFilter, setPackageFilter] = useState(
@@ -60,7 +62,12 @@ export default function Orders({
     const [editingOrder, setEditingOrder] = useState<OrderItem | null>(null);
     const [showCreateModal, setShowCreateModal] = useState(false);
 
-    const isAdmin = ['admin', 'pusat'].includes(userRole);
+    const isAdmin = userRole === 'admin';
+    const canManageOrders = ['admin', 'admin_manifest', 'agen'].includes(
+        userRole,
+    );
+    const canSelectAgent = ['admin', 'admin_manifest'].includes(userRole);
+    const canViewAllAgents = userRole !== 'agen';
 
     const {
         data,
@@ -161,9 +168,13 @@ export default function Orders({
                     <span className="mb-4 inline-block rounded-full bg-amber-400 px-3 py-1 text-[10px] font-bold tracking-widest text-emerald-950 uppercase shadow-sm shadow-amber-400/20">
                         {userRole === 'admin'
                             ? 'Super Admin'
-                            : userRole === 'pusat'
-                              ? 'Pusat'
-                              : 'Agen Resmi'}
+                            : userRole === 'admin_manifest'
+                              ? 'Admin Manifest'
+                              : userRole === 'admin_paket'
+                                ? 'Admin Paket'
+                                : userRole === 'admin_keuangan'
+                                  ? 'Admin Keuangan'
+                                  : 'Agen Resmi'}
                     </span>
                     <h2 className="flex items-center gap-3 text-3xl font-extrabold tracking-tight md:text-4xl">
                         <ClipboardList className="text-amber-400" size={36} />
@@ -199,7 +210,7 @@ export default function Orders({
             <div className="mb-6 flex flex-col items-stretch justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:flex-row md:items-center">
                 <div className="flex flex-1 flex-wrap items-center gap-3">
                     {/* Agent Filter for admin/pusat */}
-                    {isAdmin && (
+                    {canViewAllAgents && (
                         <div className="w-full md:w-56">
                             <select
                                 value={agentFilter}
@@ -251,7 +262,7 @@ export default function Orders({
                 </div>
 
                 {/* Create Order Button */}
-                {userRole !== 'pusat' && (
+                {canManageOrders && (
                     <Button
                         onClick={openCreate}
                         className="gap-2 rounded-xl bg-emerald-600 px-5 py-6 font-bold text-white shadow-lg shadow-emerald-600/10 hover:bg-emerald-700"
@@ -369,22 +380,28 @@ export default function Orders({
                                     <td className="px-6 py-5 text-right">
                                         <div className="flex items-center justify-end gap-2">
                                             {/* Isi Jamaah */}
-                                            {order.status_kunci === 'open' && (
-                                                <Button
-                                                    onClick={() =>
-                                                        router.get(
-                                                            `/admin/orders/${order.id}/isi-jamaah`,
-                                                        )
-                                                    }
-                                                    className="rounded-lg bg-emerald-600 text-xs font-bold text-white hover:bg-emerald-700"
-                                                    size="sm"
-                                                >
-                                                    Isi Jamaah
-                                                </Button>
-                                            )}
+                                            {canManageOrders &&
+                                                order.manifest_status !==
+                                                    'final' &&
+                                                order.status_kunci ===
+                                                    'open' && (
+                                                    <Button
+                                                        onClick={() =>
+                                                            router.get(
+                                                                `/admin/orders/${order.id}/isi-jamaah`,
+                                                            )
+                                                        }
+                                                        className="rounded-lg bg-emerald-600 text-xs font-bold text-white hover:bg-emerald-700"
+                                                        size="sm"
+                                                    >
+                                                        Isi Jamaah
+                                                    </Button>
+                                                )}
 
                                             {/* Edit */}
-                                            {userRole !== 'pusat' &&
+                                            {canManageOrders &&
+                                                order.manifest_status !==
+                                                    'final' &&
                                                 (order.status_kunci ===
                                                     'open' ||
                                                     isAdmin) && (
@@ -402,29 +419,31 @@ export default function Orders({
                                                 )}
 
                                             {/* Lock Toggle */}
-                                            {isAdmin && (
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() =>
-                                                        toggleLock(order.id)
-                                                    }
-                                                    className="rounded-lg border-amber-200 bg-amber-50 font-bold text-amber-700 shadow-sm hover:bg-amber-100 hover:text-amber-800"
-                                                    title={
-                                                        order.status_kunci ===
-                                                        'open'
-                                                            ? 'Kunci Order'
-                                                            : 'Buka Kunci Order'
-                                                    }
-                                                >
-                                                    {order.status_kunci ===
-                                                    'open' ? (
-                                                        <Lock size={14} />
-                                                    ) : (
-                                                        <Unlock size={14} />
-                                                    )}
-                                                </Button>
-                                            )}
+                                            {isAdmin &&
+                                                order.manifest_status !==
+                                                    'final' && (
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() =>
+                                                            toggleLock(order.id)
+                                                        }
+                                                        className="rounded-lg border-amber-200 bg-amber-50 font-bold text-amber-700 shadow-sm hover:bg-amber-100 hover:text-amber-800"
+                                                        title={
+                                                            order.status_kunci ===
+                                                            'open'
+                                                                ? 'Kunci Order'
+                                                                : 'Buka Kunci Order'
+                                                        }
+                                                    >
+                                                        {order.status_kunci ===
+                                                        'open' ? (
+                                                            <Lock size={14} />
+                                                        ) : (
+                                                            <Unlock size={14} />
+                                                        )}
+                                                    </Button>
+                                                )}
                                         </div>
                                     </td>
                                 </tr>
@@ -494,7 +513,7 @@ export default function Orders({
                             </div>
 
                             {/* Agent */}
-                            {isAdmin && (
+                            {canSelectAgent && (
                                 <div className="space-y-2">
                                     <Label className="font-bold text-slate-700">
                                         Nama Agen
@@ -632,7 +651,7 @@ export default function Orders({
                             </div>
 
                             {/* Agent */}
-                            {isAdmin && (
+                            {canSelectAgent && (
                                 <div className="space-y-2">
                                     <Label className="font-bold text-slate-700">
                                         Nama Agen

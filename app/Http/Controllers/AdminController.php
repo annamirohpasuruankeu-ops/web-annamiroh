@@ -11,13 +11,14 @@ use App\Models\Order;
 use App\Models\PopupPromo;
 use App\Models\Gallery;
 use Illuminate\Support\Facades\Storage;
+use App\Support\ManifestLock;
 
 class AdminController extends Controller
 {
     public function index(Request $request)
     {
         // Simple role check (Pusat can view, Admin can manage)
-        if ($request->user()->role !== 'admin' && $request->user()->role !== 'pusat') {
+        if ($request->user()->role !== 'admin') {
             abort(403, 'Unauthorized access.');
         }
 
@@ -101,7 +102,7 @@ class AdminController extends Controller
     public function packages(Request $request)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'pusat', 'agen']))
+        if (!in_array($role, ['admin', 'admin_paket', 'admin_manifest', 'admin_keuangan', 'agen']))
             abort(403);
         $search = $request->input('search');
 
@@ -124,7 +125,7 @@ class AdminController extends Controller
     public function jamaah(Request $request)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'pusat', 'agen'])) {
+        if (!in_array($role, ['admin', 'admin_manifest', 'agen'])) {
             abort(403);
         }
 
@@ -141,7 +142,7 @@ class AdminController extends Controller
                 $q->where('agent_id', $request->user()->id)
                     ->orWhere('id', $request->user()->id);
             });
-        } elseif ($agentId && in_array($role, ['admin', 'pusat'])) {
+        } elseif ($agentId && in_array($role, ['admin', 'admin_manifest'])) {
             $query->whereHas('user', function ($q) use ($agentId) {
                 $q->where('agent_id', $agentId)
                     ->orWhere('id', $agentId);
@@ -181,7 +182,7 @@ class AdminController extends Controller
         $activePackages = Package::withCount('bookings')->where('is_active', true)->get();
 
         $agents = [];
-        if (in_array($role, ['admin', 'pusat'])) {
+        if (in_array($role, ['admin', 'admin_manifest'])) {
             $agents = User::where('role', 'agen')->orderBy('name')->get(['id', 'name']);
         }
 
@@ -203,7 +204,7 @@ class AdminController extends Controller
     public function exportJamaah(Request $request)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'pusat', 'agen'])) {
+        if (!in_array($role, ['admin', 'admin_manifest', 'agen'])) {
             abort(403);
         }
 
@@ -220,7 +221,7 @@ class AdminController extends Controller
                 $q->where('agent_id', $request->user()->id)
                     ->orWhere('id', $request->user()->id);
             });
-        } elseif ($agentId && in_array($role, ['admin', 'pusat'])) {
+        } elseif ($agentId && in_array($role, ['admin', 'admin_manifest'])) {
             $query->whereHas('user', function ($q) use ($agentId) {
                 $q->where('agent_id', $agentId)
                     ->orWhere('id', $agentId);
@@ -241,6 +242,7 @@ class AdminController extends Controller
             });
         }
 
+        $selectedPackage = $packageId ? Package::find($packageId) : null;
         $records = $query->get();
 
         $mapped = $records->map(function ($item) {
@@ -278,7 +280,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
         table {
             border-collapse: collapse;
             font-family: Arial, sans-serif;
-            font-size: 11px;
+            font-size: 12pt;
         }
         th {
             background-color: #f2f2f2;
@@ -291,6 +293,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
             border: 1px solid #000000;
             padding: 5px;
             vertical-align: middle;
+            font-size: 12pt;
         }
         .text-center {
             text-align: center;
@@ -303,10 +306,13 @@ xmlns="http://www.w3.org/TR/REC-html40">
 </head>
 <body>
     <table>
+        <tr>
+            <td colspan="16" style="border:0;font-weight:bold;font-size:12pt">Tanggal Keberangkatan: ' . ($selectedPackage?->departure_date ? $selectedPackage->departure_date->format('d/m/Y') : 'Semua Paket') . '</td>
+        </tr>
+        <tr><td colspan="16" style="border:0">&nbsp;</td></tr>
         <thead>
             <tr>
                 <th>No</th>
-                <th>Tanggal Keberangkatan</th>
                 <th>Nama Agen (Urut)</th>
                 <th>Nama Lengkap</th>
                 <th>Sex</th>
@@ -352,7 +358,6 @@ xmlns="http://www.w3.org/TR/REC-html40">
 
             $html .= '<tr>
                 <td class="text-center">' . $no++ . '</td>
-                <td>' . htmlspecialchars($item->computed_package_name) . '</td>
                 <td>' . htmlspecialchars($agentNameWithOrder) . '</td>
                 <td>' . htmlspecialchars($item->name) . '</td>
                 <td class="text-center">' . htmlspecialchars($sex) . '</td>
@@ -388,7 +393,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
     public function jamaahDatabase(Request $request)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'pusat', 'agen'])) {
+        if (!in_array($role, ['admin', 'admin_manifest', 'agen'])) {
             abort(403);
         }
 
@@ -441,7 +446,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
     public function manageMembers(Request $request, $id)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'agen']))
+        if (!in_array($role, ['admin', 'admin_manifest', 'agen']))
             abort(403);
 
         $jamaah = User::with('profile', 'jamaahMembers', 'bookings.package', 'bookings.jamaahMember')->findOrFail($id);
@@ -458,7 +463,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
     public function bookings(Request $request)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'pusat', 'agen']))
+        if (!in_array($role, ['admin', 'admin_manifest', 'agen']))
             abort(403);
 
         $search = $request->input('search');
@@ -516,7 +521,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
 
     public function updateBooking(Request $request, $id)
     {
-        if ($request->user()->role !== 'admin' && $request->user()->role !== 'pusat')
+        if (!in_array($request->user()->role, ['admin', 'admin_keuangan'], true))
             abort(403);
 
         $booking = Booking::with('package', 'user.profile', 'jamaahMember', 'user.jamaahMembers')->findOrFail($id);
@@ -557,8 +562,8 @@ xmlns="http://www.w3.org/TR/REC-html40">
 
     public function assignJamaah(Request $request)
     {
-        if ($request->user()->role !== 'admin') {
-            abort(403, 'Only admins can assign jamaah.');
+        if (!in_array($request->user()->role, ['admin', 'admin_manifest'], true)) {
+            abort(403);
         }
 
         $request->validate([
@@ -569,6 +574,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
         ]);
 
         $package = Package::findOrFail($request->package_id);
+        ManifestLock::ensurePackageEditable($package);
 
         if ($package->available_seats <= 0) {
             return back()->withErrors(['message' => 'Paket sudah penuh. Tidak ada seat tersisa.']);
@@ -622,7 +628,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
 
     public function agents(Request $request)
     {
-        if ($request->user()->role !== 'admin' && $request->user()->role !== 'pusat')
+        if (!in_array($request->user()->role, ['admin', 'admin_keuangan'], true))
             abort(403);
 
         $search = $request->input('search');
@@ -643,12 +649,13 @@ xmlns="http://www.w3.org/TR/REC-html40">
             'agents' => $query->paginate(10)->withQueryString(),
             'filters' => ['search' => $search],
             'importResult' => $request->session()->get('agentImportResult'),
+            'userRole' => $request->user()->role,
         ]);
     }
 
     public function storeAgent(Request $request)
     {
-        if ($request->user()->role !== 'admin')
+        if (!in_array($request->user()->role, ['admin', 'admin_paket'], true))
             abort(403);
         $validated = $request->validate([
             'name' => 'required|string',
@@ -685,7 +692,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
 
     public function importAgents(Request $request)
     {
-        if ($request->user()->role !== 'admin')
+        if (!in_array($request->user()->role, ['admin', 'admin_paket'], true))
             abort(403);
 
         $request->validate([
@@ -922,11 +929,12 @@ xmlns="http://www.w3.org/TR/REC-html40">
 
     public function removeJamaah(Request $request, $id)
     {
-        if ($request->user()->role !== 'admin') {
-            abort(403, 'Only admins can remove jamaah.');
+        if (!in_array($request->user()->role, ['admin', 'admin_manifest'], true)) {
+            abort(403);
         }
 
         $booking = Booking::findOrFail($id);
+        ManifestLock::ensurePackageEditable($booking->package_id);
         $booking->delete();
 
         return back()->with('success', 'Jamaah berhasil dihapus dari paket dan seat dikembalikan.');
@@ -934,7 +942,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
 
     public function storePackage(Request $request)
     {
-        if ($request->user()->role !== 'admin')
+        if (!in_array($request->user()->role, ['admin', 'admin_paket'], true))
             abort(403);
         $validated = $request->validate([
             'name' => 'required|string',
@@ -956,6 +964,10 @@ xmlns="http://www.w3.org/TR/REC-html40">
             'is_best_seller' => 'boolean',
         ]);
 
+        if (!empty($validated['package_id'])) {
+            ManifestLock::ensurePackageEditable((int) $validated['package_id']);
+        }
+
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('packages', 'public');
         }
@@ -969,7 +981,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
 
     public function updatePackage(Request $request, $id)
     {
-        if ($request->user()->role !== 'admin')
+        if (!in_array($request->user()->role, ['admin', 'admin_paket'], true))
             abort(403);
         $package = Package::findOrFail($id);
         $validated = $request->validate([
@@ -1004,6 +1016,14 @@ xmlns="http://www.w3.org/TR/REC-html40">
         $validated['is_active'] = $request->input('is_active', true);
         $validated['is_best_seller'] = $request->input('is_best_seller', false);
 
+        if ($package->manifest_status === 'final') {
+            foreach (['name', 'code', 'departure_date', 'total_seats'] as $field) {
+                $incoming = $field === 'departure_date' ? date('Y-m-d', strtotime($validated[$field])) : (string) $validated[$field];
+                $current = $field === 'departure_date' ? optional($package->departure_date)->format('Y-m-d') : (string) $package->{$field};
+                abort_if($incoming !== $current, 423, 'Data utama paket tidak dapat diubah selama manifest berstatus final.');
+            }
+        }
+
         $diff = $validated['total_seats'] - $package->total_seats;
         $validated['available_seats'] = $package->available_seats + $diff;
 
@@ -1014,7 +1034,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
     public function storeJamaah(Request $request)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'agen']))
+        if (!in_array($role, ['admin', 'admin_manifest', 'agen']))
             abort(403);
 
         $validated = $request->validate([
@@ -1033,6 +1053,10 @@ xmlns="http://www.w3.org/TR/REC-html40">
             'paspor_file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'vaksin_file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
+
+        if (!empty($validated['package_id'])) {
+            ManifestLock::ensurePackageEditable((int) $validated['package_id']);
+        }
 
         $user = User::create([
             'name' => $validated['name'],
@@ -1093,10 +1117,11 @@ xmlns="http://www.w3.org/TR/REC-html40">
     public function updateJamaah(Request $request, $id)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'agen']))
+        if (!in_array($role, ['admin', 'admin_manifest', 'agen']))
             abort(403);
 
         $member = \App\Models\JamaahMember::findOrFail($id);
+        ManifestLock::ensureMemberEditable($member);
 
         if ($role === 'agen' && $member->user?->agent_id !== $request->user()->id) {
             abort(403, 'Unauthorized.');
@@ -1160,7 +1185,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
     public function storeMember(Request $request, $userId)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'agen']))
+        if (!in_array($role, ['admin', 'admin_manifest', 'agen']))
             abort(403);
 
         $jamaah = User::findOrFail($userId);
@@ -1179,6 +1204,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
         // Auto-book the new family member if the main user is already booked
         $activeBooking = Booking::where('user_id', $userId)->first();
         if ($activeBooking) {
+            ManifestLock::ensurePackageEditable($activeBooking->package_id);
             Booking::create([
                 'user_id' => $userId,
                 'jamaah_member_id' => $member->id,
@@ -1194,7 +1220,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
     public function uploadMemberDocument(Request $request, $memberId)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'agen']))
+        if (!in_array($role, ['admin', 'admin_manifest', 'agen']))
             abort(403);
 
         $request->validate([
@@ -1203,6 +1229,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
         ]);
 
         $member = \App\Models\JamaahMember::findOrFail($memberId);
+        ManifestLock::ensureMemberEditable($member);
 
         $type = $request->document_type;
         $field = $type . '_file';
@@ -1219,7 +1246,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
     public function toggleUserStatus(Request $request, $id)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'pusat']))
+        if ($role !== 'admin')
             abort(403);
 
         $user = User::findOrFail($id);
@@ -1238,7 +1265,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
     public function toggleBookingSeat(Request $request, $id)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'pusat']))
+        if ($role !== 'admin')
             abort(403);
 
         $booking = Booking::with('package')->findOrFail($id);
@@ -1259,7 +1286,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
     public function invoice(Request $request, $id)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'pusat', 'agen'])) {
+        if (!in_array($role, ['admin', 'admin_manifest', 'admin_paket', 'admin_keuangan', 'agen'])) {
             abort(403);
         }
 
@@ -1304,7 +1331,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
 
     public function popupPromos(Request $request)
     {
-        if ($request->user()->role !== 'admin' && $request->user()->role !== 'pusat')
+        if ($request->user()->role !== 'admin')
             abort(403);
 
         $popupPromos = PopupPromo::orderBy('created_at', 'desc')->get();
@@ -1408,7 +1435,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
 
     public function galleries(Request $request)
     {
-        if ($request->user()->role !== 'admin' && $request->user()->role !== 'pusat')
+        if ($request->user()->role !== 'admin')
             abort(403);
 
         $galleries = Gallery::orderBy('order', 'asc')->orderBy('created_at', 'desc')->get();
@@ -1504,7 +1531,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
     public function financialReport(Request $request)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'pusat'])) {
+        if (!in_array($role, ['admin', 'admin_keuangan'])) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -1595,7 +1622,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
     public function exportFinancialReport(Request $request)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'pusat'])) {
+        if (!in_array($role, ['admin', 'admin_keuangan'])) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -1683,7 +1710,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
     public function orders(Request $request)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'pusat', 'agen'])) {
+        if (!in_array($role, ['admin', 'admin_manifest', 'admin_paket', 'admin_keuangan', 'agen'])) {
             abort(403);
         }
 
@@ -1741,6 +1768,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
                 'total_pax' => $order->total_pax,
                 'keterangan' => $order->keterangan,
                 'status_kunci' => $order->status_kunci,
+                'manifest_status' => $order->package?->manifest_status ?? 'draft',
                 'inputted_pax' => $inputted,
                 'missing_pax' => $missing,
                 'incomplete_pax' => $incomplete,
@@ -1754,7 +1782,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
             $totalJamaahRegistered = Order::sum('total_pax');
         }
 
-        $activePackages = Package::where('is_active', true)->get();
+        $activePackages = Package::where('is_active', true)->where('manifest_status', '!=', 'final')->get();
         $agents = User::where('role', 'agen')->get();
 
         return Inertia::render('admin/orders', [
@@ -1774,18 +1802,19 @@ xmlns="http://www.w3.org/TR/REC-html40">
     public function storeOrder(Request $request)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'agen'])) {
+        if (!in_array($role, ['admin', 'admin_manifest', 'agen'])) {
             abort(403);
         }
 
         $validated = $request->validate([
             'package_id' => 'required|exists:packages,id',
-            'agent_id' => $role === 'admin' ? 'required|exists:users,id' : 'nullable',
+            'agent_id' => in_array($role, ['admin', 'admin_manifest']) ? 'required|exists:users,id' : 'nullable',
             'total_pax' => 'required|integer|min:1',
             'keterangan' => 'nullable|string',
         ]);
 
-        $agentId = $role === 'admin' ? $validated['agent_id'] : $request->user()->id;
+        ManifestLock::ensurePackageEditable((int) $validated['package_id']);
+        $agentId = in_array($role, ['admin', 'admin_manifest']) ? $validated['agent_id'] : $request->user()->id;
         $agent = User::findOrFail($agentId);
 
         $order = Order::create([
@@ -1803,11 +1832,12 @@ xmlns="http://www.w3.org/TR/REC-html40">
     public function updateOrder(Request $request, $id)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'agen'])) {
+        if (!in_array($role, ['admin', 'admin_manifest', 'agen'])) {
             abort(403);
         }
 
         $order = Order::findOrFail($id);
+        ManifestLock::ensurePackageEditable($order->package_id);
 
         if ($role === 'agen' && $order->agent_id !== $request->user()->id) {
             abort(403);
@@ -1819,7 +1849,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
 
         $validated = $request->validate([
             'package_id' => 'required|exists:packages,id',
-            'agent_id' => $role === 'admin' ? 'required|exists:users,id' : 'nullable',
+            'agent_id' => in_array($role, ['admin', 'admin_manifest']) ? 'required|exists:users,id' : 'nullable',
             'total_pax' => 'required|integer|min:1',
             'keterangan' => 'nullable|string',
         ]);
@@ -1831,9 +1861,10 @@ xmlns="http://www.w3.org/TR/REC-html40">
             ]);
         }
 
-        $agentId = $role === 'admin' ? $validated['agent_id'] : $order->agent_id;
+        $agentId = in_array($role, ['admin', 'admin_manifest']) ? $validated['agent_id'] : $order->agent_id;
 
         if ($order->package_id !== (int) $validated['package_id']) {
+            ManifestLock::ensurePackageEditable((int) $validated['package_id']);
             if ($order->package) {
                 $order->package->increment('available_seats', $order->total_pax);
             }
@@ -1856,11 +1887,12 @@ xmlns="http://www.w3.org/TR/REC-html40">
 
     public function toggleOrderLock(Request $request, $id)
     {
-        if (!in_array($request->user()->role, ['admin', 'pusat'])) {
+        if ($request->user()->role !== 'admin') {
             abort(403);
         }
 
         $order = Order::findOrFail($id);
+        ManifestLock::ensurePackageEditable($order->package_id);
         $order->status_kunci = $order->status_kunci === 'open' ? 'locked' : 'open';
         $order->save();
 
@@ -1871,11 +1903,12 @@ xmlns="http://www.w3.org/TR/REC-html40">
     public function isiJamaah(Request $request, $id)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'agen'])) {
+        if (!in_array($role, ['admin', 'admin_manifest', 'agen'])) {
             abort(403);
         }
 
         $order = Order::with(['package', 'agent', 'groupUser'])->findOrFail($id);
+        ManifestLock::ensurePackageEditable($order->package);
 
         if ($role === 'agen' && $order->agent_id !== $request->user()->id) {
             abort(403);
@@ -1944,11 +1977,12 @@ xmlns="http://www.w3.org/TR/REC-html40">
     public function saveJamaahGrid(Request $request, $id)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'agen'])) {
+        if (!in_array($role, ['admin', 'admin_manifest', 'agen'])) {
             abort(403);
         }
 
         $order = Order::findOrFail($id);
+        ManifestLock::ensurePackageEditable($order->package_id);
 
         if ($role === 'agen' && $order->agent_id !== $request->user()->id) {
             abort(403);
@@ -2039,7 +2073,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
     public function moveBookingPackage(Request $request, $id)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'agen'])) {
+        if (!in_array($role, ['admin', 'admin_manifest', 'agen'])) {
             abort(403);
         }
 
@@ -2063,6 +2097,8 @@ xmlns="http://www.w3.org/TR/REC-html40">
         ]);
 
         $targetPackageId = $validated['target_package_id'];
+        ManifestLock::ensurePackageEditable($sourceOrder->package_id);
+        ManifestLock::ensurePackageEditable((int) $targetPackageId);
 
         if ($targetPackageId == $sourceOrder->package_id) {
             return back()->withErrors(['message' => 'Paket tujuan tidak boleh sama dengan paket asal.']);
@@ -2140,7 +2176,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
     public function searchJamaahMembers(Request $request)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'pusat', 'agen'])) {
+        if (!in_array($role, ['admin', 'admin_manifest', 'agen'])) {
             abort(403);
         }
 
@@ -2191,7 +2227,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
     public function importJamaah(Request $request)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'pusat'])) {
+        if (!in_array($role, ['admin', 'admin_manifest'])) {
             abort(403);
         }
 
@@ -2201,6 +2237,7 @@ xmlns="http://www.w3.org/TR/REC-html40">
         ]);
 
         $packageId = $request->input('package_id');
+        ManifestLock::ensurePackageEditable((int) $packageId);
         $file = $request->file('file');
         $path = $file->getRealPath();
 

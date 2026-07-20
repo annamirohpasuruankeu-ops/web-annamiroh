@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\DashboardController::index
- * @see app/Http/Controllers/DashboardController.php:14
+ * @see app/Http/Controllers/DashboardController.php:15
  * @route '/dashboard'
  */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\DashboardController::index
- * @see app/Http/Controllers/DashboardController.php:14
+ * @see app/Http/Controllers/DashboardController.php:15
  * @route '/dashboard'
  */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\DashboardController::index
- * @see app/Http/Controllers/DashboardController.php:14
+ * @see app/Http/Controllers/DashboardController.php:15
  * @route '/dashboard'
  */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -34,7 +34,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\DashboardController::index
- * @see app/Http/Controllers/DashboardController.php:14
+ * @see app/Http/Controllers/DashboardController.php:15
  * @route '/dashboard'
  */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -44,7 +44,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
     /**
 * @see \App\Http\Controllers\DashboardController::index
- * @see app/Http/Controllers/DashboardController.php:14
+ * @see app/Http/Controllers/DashboardController.php:15
  * @route '/dashboard'
  */
     const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -54,7 +54,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
             /**
 * @see \App\Http\Controllers\DashboardController::index
- * @see app/Http/Controllers/DashboardController.php:14
+ * @see app/Http/Controllers/DashboardController.php:15
  * @route '/dashboard'
  */
         indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -63,7 +63,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
         })
             /**
 * @see \App\Http\Controllers\DashboardController::index
- * @see app/Http/Controllers/DashboardController.php:14
+ * @see app/Http/Controllers/DashboardController.php:15
  * @route '/dashboard'
  */
         indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     index.form = indexForm
 /**
 * @see \App\Http\Controllers\DashboardController::uploadDocuments
- * @see app/Http/Controllers/DashboardController.php:112
+ * @see app/Http/Controllers/DashboardController.php:114
  * @route '/dashboard/documents'
  */
 export const uploadDocuments = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -94,7 +94,7 @@ uploadDocuments.definition = {
 
 /**
 * @see \App\Http\Controllers\DashboardController::uploadDocuments
- * @see app/Http/Controllers/DashboardController.php:112
+ * @see app/Http/Controllers/DashboardController.php:114
  * @route '/dashboard/documents'
  */
 uploadDocuments.url = (options?: RouteQueryOptions) => {
@@ -103,7 +103,7 @@ uploadDocuments.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\DashboardController::uploadDocuments
- * @see app/Http/Controllers/DashboardController.php:112
+ * @see app/Http/Controllers/DashboardController.php:114
  * @route '/dashboard/documents'
  */
 uploadDocuments.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -113,7 +113,7 @@ uploadDocuments.post = (options?: RouteQueryOptions): RouteDefinition<'post'> =>
 
     /**
 * @see \App\Http\Controllers\DashboardController::uploadDocuments
- * @see app/Http/Controllers/DashboardController.php:112
+ * @see app/Http/Controllers/DashboardController.php:114
  * @route '/dashboard/documents'
  */
     const uploadDocumentsForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -123,7 +123,7 @@ uploadDocuments.post = (options?: RouteQueryOptions): RouteDefinition<'post'> =>
 
             /**
 * @see \App\Http\Controllers\DashboardController::uploadDocuments
- * @see app/Http/Controllers/DashboardController.php:112
+ * @see app/Http/Controllers/DashboardController.php:114
  * @route '/dashboard/documents'
  */
         uploadDocumentsForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -134,7 +134,7 @@ uploadDocuments.post = (options?: RouteQueryOptions): RouteDefinition<'post'> =>
     uploadDocuments.form = uploadDocumentsForm
 /**
 * @see \App\Http\Controllers\DashboardController::storeJamaahMember
- * @see app/Http/Controllers/DashboardController.php:138
+ * @see app/Http/Controllers/DashboardController.php:140
  * @route '/dashboard/members'
  */
 export const storeJamaahMember = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -149,7 +149,7 @@ storeJamaahMember.definition = {
 
 /**
 * @see \App\Http\Controllers\DashboardController::storeJamaahMember
- * @see app/Http/Controllers/DashboardController.php:138
+ * @see app/Http/Controllers/DashboardController.php:140
  * @route '/dashboard/members'
  */
 storeJamaahMember.url = (options?: RouteQueryOptions) => {
@@ -158,7 +158,7 @@ storeJamaahMember.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\DashboardController::storeJamaahMember
- * @see app/Http/Controllers/DashboardController.php:138
+ * @see app/Http/Controllers/DashboardController.php:140
  * @route '/dashboard/members'
  */
 storeJamaahMember.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -168,7 +168,7 @@ storeJamaahMember.post = (options?: RouteQueryOptions): RouteDefinition<'post'> 
 
     /**
 * @see \App\Http\Controllers\DashboardController::storeJamaahMember
- * @see app/Http/Controllers/DashboardController.php:138
+ * @see app/Http/Controllers/DashboardController.php:140
  * @route '/dashboard/members'
  */
     const storeJamaahMemberForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -178,7 +178,7 @@ storeJamaahMember.post = (options?: RouteQueryOptions): RouteDefinition<'post'> 
 
             /**
 * @see \App\Http\Controllers\DashboardController::storeJamaahMember
- * @see app/Http/Controllers/DashboardController.php:138
+ * @see app/Http/Controllers/DashboardController.php:140
  * @route '/dashboard/members'
  */
         storeJamaahMemberForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -189,7 +189,7 @@ storeJamaahMember.post = (options?: RouteQueryOptions): RouteDefinition<'post'> 
     storeJamaahMember.form = storeJamaahMemberForm
 /**
 * @see \App\Http\Controllers\DashboardController::updateJamaahMember
- * @see app/Http/Controllers/DashboardController.php:195
+ * @see app/Http/Controllers/DashboardController.php:201
  * @route '/dashboard/members/{id}'
  */
 export const updateJamaahMember = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -204,7 +204,7 @@ updateJamaahMember.definition = {
 
 /**
 * @see \App\Http\Controllers\DashboardController::updateJamaahMember
- * @see app/Http/Controllers/DashboardController.php:195
+ * @see app/Http/Controllers/DashboardController.php:201
  * @route '/dashboard/members/{id}'
  */
 updateJamaahMember.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -232,7 +232,7 @@ updateJamaahMember.url = (args: { id: string | number } | [id: string | number ]
 
 /**
 * @see \App\Http\Controllers\DashboardController::updateJamaahMember
- * @see app/Http/Controllers/DashboardController.php:195
+ * @see app/Http/Controllers/DashboardController.php:201
  * @route '/dashboard/members/{id}'
  */
 updateJamaahMember.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -242,7 +242,7 @@ updateJamaahMember.put = (args: { id: string | number } | [id: string | number ]
 
     /**
 * @see \App\Http\Controllers\DashboardController::updateJamaahMember
- * @see app/Http/Controllers/DashboardController.php:195
+ * @see app/Http/Controllers/DashboardController.php:201
  * @route '/dashboard/members/{id}'
  */
     const updateJamaahMemberForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -257,7 +257,7 @@ updateJamaahMember.put = (args: { id: string | number } | [id: string | number ]
 
             /**
 * @see \App\Http\Controllers\DashboardController::updateJamaahMember
- * @see app/Http/Controllers/DashboardController.php:195
+ * @see app/Http/Controllers/DashboardController.php:201
  * @route '/dashboard/members/{id}'
  */
         updateJamaahMemberForm.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -273,7 +273,7 @@ updateJamaahMember.put = (args: { id: string | number } | [id: string | number ]
     updateJamaahMember.form = updateJamaahMemberForm
 /**
 * @see \App\Http\Controllers\DashboardController::uploadMemberDocument
- * @see app/Http/Controllers/DashboardController.php:227
+ * @see app/Http/Controllers/DashboardController.php:234
  * @route '/dashboard/members/{id}/documents'
  */
 export const uploadMemberDocument = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -288,7 +288,7 @@ uploadMemberDocument.definition = {
 
 /**
 * @see \App\Http\Controllers\DashboardController::uploadMemberDocument
- * @see app/Http/Controllers/DashboardController.php:227
+ * @see app/Http/Controllers/DashboardController.php:234
  * @route '/dashboard/members/{id}/documents'
  */
 uploadMemberDocument.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -316,7 +316,7 @@ uploadMemberDocument.url = (args: { id: string | number } | [id: string | number
 
 /**
 * @see \App\Http\Controllers\DashboardController::uploadMemberDocument
- * @see app/Http/Controllers/DashboardController.php:227
+ * @see app/Http/Controllers/DashboardController.php:234
  * @route '/dashboard/members/{id}/documents'
  */
 uploadMemberDocument.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -326,7 +326,7 @@ uploadMemberDocument.post = (args: { id: string | number } | [id: string | numbe
 
     /**
 * @see \App\Http\Controllers\DashboardController::uploadMemberDocument
- * @see app/Http/Controllers/DashboardController.php:227
+ * @see app/Http/Controllers/DashboardController.php:234
  * @route '/dashboard/members/{id}/documents'
  */
     const uploadMemberDocumentForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -336,7 +336,7 @@ uploadMemberDocument.post = (args: { id: string | number } | [id: string | numbe
 
             /**
 * @see \App\Http\Controllers\DashboardController::uploadMemberDocument
- * @see app/Http/Controllers/DashboardController.php:227
+ * @see app/Http/Controllers/DashboardController.php:234
  * @route '/dashboard/members/{id}/documents'
  */
         uploadMemberDocumentForm.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -347,7 +347,7 @@ uploadMemberDocument.post = (args: { id: string | number } | [id: string | numbe
     uploadMemberDocument.form = uploadMemberDocumentForm
 /**
 * @see \App\Http\Controllers\DashboardController::storeBooking
- * @see app/Http/Controllers/DashboardController.php:40
+ * @see app/Http/Controllers/DashboardController.php:41
  * @route '/dashboard/bookings'
  */
 export const storeBooking = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -362,7 +362,7 @@ storeBooking.definition = {
 
 /**
 * @see \App\Http\Controllers\DashboardController::storeBooking
- * @see app/Http/Controllers/DashboardController.php:40
+ * @see app/Http/Controllers/DashboardController.php:41
  * @route '/dashboard/bookings'
  */
 storeBooking.url = (options?: RouteQueryOptions) => {
@@ -371,7 +371,7 @@ storeBooking.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\DashboardController::storeBooking
- * @see app/Http/Controllers/DashboardController.php:40
+ * @see app/Http/Controllers/DashboardController.php:41
  * @route '/dashboard/bookings'
  */
 storeBooking.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -381,7 +381,7 @@ storeBooking.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\DashboardController::storeBooking
- * @see app/Http/Controllers/DashboardController.php:40
+ * @see app/Http/Controllers/DashboardController.php:41
  * @route '/dashboard/bookings'
  */
     const storeBookingForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -391,7 +391,7 @@ storeBooking.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\DashboardController::storeBooking
- * @see app/Http/Controllers/DashboardController.php:40
+ * @see app/Http/Controllers/DashboardController.php:41
  * @route '/dashboard/bookings'
  */
         storeBookingForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

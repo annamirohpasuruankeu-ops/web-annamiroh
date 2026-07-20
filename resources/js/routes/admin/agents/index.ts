@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\AdminController::store
- * @see app/Http/Controllers/AdminController.php:649
+ * @see app/Http/Controllers/AdminController.php:656
  * @route '/admin/agents'
  */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\AdminController::store
- * @see app/Http/Controllers/AdminController.php:649
+ * @see app/Http/Controllers/AdminController.php:656
  * @route '/admin/agents'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\AdminController::store
- * @see app/Http/Controllers/AdminController.php:649
+ * @see app/Http/Controllers/AdminController.php:656
  * @route '/admin/agents'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -35,7 +35,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\AdminController::store
- * @see app/Http/Controllers/AdminController.php:649
+ * @see app/Http/Controllers/AdminController.php:656
  * @route '/admin/agents'
  */
     const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -45,7 +45,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\AdminController::store
- * @see app/Http/Controllers/AdminController.php:649
+ * @see app/Http/Controllers/AdminController.php:656
  * @route '/admin/agents'
  */
         storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -56,7 +56,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     store.form = storeForm
 /**
 * @see \App\Http\Controllers\AdminController::update
- * @see app/Http/Controllers/AdminController.php:879
+ * @see app/Http/Controllers/AdminController.php:886
  * @route '/admin/agents/{id}'
  */
 export const update = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -71,7 +71,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\AdminController::update
- * @see app/Http/Controllers/AdminController.php:879
+ * @see app/Http/Controllers/AdminController.php:886
  * @route '/admin/agents/{id}'
  */
 update.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -99,7 +99,7 @@ update.url = (args: { id: string | number } | [id: string | number ] | string | 
 
 /**
 * @see \App\Http\Controllers\AdminController::update
- * @see app/Http/Controllers/AdminController.php:879
+ * @see app/Http/Controllers/AdminController.php:886
  * @route '/admin/agents/{id}'
  */
 update.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -109,7 +109,7 @@ update.put = (args: { id: string | number } | [id: string | number ] | string | 
 
     /**
 * @see \App\Http\Controllers\AdminController::update
- * @see app/Http/Controllers/AdminController.php:879
+ * @see app/Http/Controllers/AdminController.php:886
  * @route '/admin/agents/{id}'
  */
     const updateForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -124,7 +124,7 @@ update.put = (args: { id: string | number } | [id: string | number ] | string | 
 
             /**
 * @see \App\Http\Controllers\AdminController::update
- * @see app/Http/Controllers/AdminController.php:879
+ * @see app/Http/Controllers/AdminController.php:886
  * @route '/admin/agents/{id}'
  */
         updateForm.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -140,7 +140,7 @@ update.put = (args: { id: string | number } | [id: string | number ] | string | 
     update.form = updateForm
 /**
 * @see \App\Http\Controllers\AdminController::importMethod
- * @see app/Http/Controllers/AdminController.php:686
+ * @see app/Http/Controllers/AdminController.php:693
  * @route '/admin/agents/import'
  */
 export const importMethod = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -155,7 +155,7 @@ importMethod.definition = {
 
 /**
 * @see \App\Http\Controllers\AdminController::importMethod
- * @see app/Http/Controllers/AdminController.php:686
+ * @see app/Http/Controllers/AdminController.php:693
  * @route '/admin/agents/import'
  */
 importMethod.url = (options?: RouteQueryOptions) => {
@@ -164,7 +164,7 @@ importMethod.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\AdminController::importMethod
- * @see app/Http/Controllers/AdminController.php:686
+ * @see app/Http/Controllers/AdminController.php:693
  * @route '/admin/agents/import'
  */
 importMethod.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -174,7 +174,7 @@ importMethod.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\AdminController::importMethod
- * @see app/Http/Controllers/AdminController.php:686
+ * @see app/Http/Controllers/AdminController.php:693
  * @route '/admin/agents/import'
  */
     const importMethodForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -184,7 +184,7 @@ importMethod.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\AdminController::importMethod
- * @see app/Http/Controllers/AdminController.php:686
+ * @see app/Http/Controllers/AdminController.php:693
  * @route '/admin/agents/import'
  */
         importMethodForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -195,7 +195,7 @@ importMethod.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     importMethod.form = importMethodForm
 /**
 * @see \App\Http\Controllers\AdminController::importTemplate
- * @see app/Http/Controllers/AdminController.php:855
+ * @see app/Http/Controllers/AdminController.php:862
  * @route '/admin/agents/import-template'
  */
 export const importTemplate = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -210,7 +210,7 @@ importTemplate.definition = {
 
 /**
 * @see \App\Http\Controllers\AdminController::importTemplate
- * @see app/Http/Controllers/AdminController.php:855
+ * @see app/Http/Controllers/AdminController.php:862
  * @route '/admin/agents/import-template'
  */
 importTemplate.url = (options?: RouteQueryOptions) => {
@@ -219,7 +219,7 @@ importTemplate.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\AdminController::importTemplate
- * @see app/Http/Controllers/AdminController.php:855
+ * @see app/Http/Controllers/AdminController.php:862
  * @route '/admin/agents/import-template'
  */
 importTemplate.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -228,7 +228,7 @@ importTemplate.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 /**
 * @see \App\Http\Controllers\AdminController::importTemplate
- * @see app/Http/Controllers/AdminController.php:855
+ * @see app/Http/Controllers/AdminController.php:862
  * @route '/admin/agents/import-template'
  */
 importTemplate.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -238,7 +238,7 @@ importTemplate.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => 
 
     /**
 * @see \App\Http\Controllers\AdminController::importTemplate
- * @see app/Http/Controllers/AdminController.php:855
+ * @see app/Http/Controllers/AdminController.php:862
  * @route '/admin/agents/import-template'
  */
     const importTemplateForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -248,7 +248,7 @@ importTemplate.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => 
 
             /**
 * @see \App\Http\Controllers\AdminController::importTemplate
- * @see app/Http/Controllers/AdminController.php:855
+ * @see app/Http/Controllers/AdminController.php:862
  * @route '/admin/agents/import-template'
  */
         importTemplateForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -257,7 +257,7 @@ importTemplate.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => 
         })
             /**
 * @see \App\Http\Controllers\AdminController::importTemplate
- * @see app/Http/Controllers/AdminController.php:855
+ * @see app/Http/Controllers/AdminController.php:862
  * @route '/admin/agents/import-template'
  */
         importTemplateForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

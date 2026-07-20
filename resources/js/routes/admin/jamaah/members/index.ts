@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\AdminController::store
- * @see app/Http/Controllers/AdminController.php:1160
+ * @see app/Http/Controllers/AdminController.php:1185
  * @route '/admin/jamaah/{id}/members'
  */
 export const store = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\AdminController::store
- * @see app/Http/Controllers/AdminController.php:1160
+ * @see app/Http/Controllers/AdminController.php:1185
  * @route '/admin/jamaah/{id}/members'
  */
 store.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -44,7 +44,7 @@ store.url = (args: { id: string | number } | [id: string | number ] | string | n
 
 /**
 * @see \App\Http\Controllers\AdminController::store
- * @see app/Http/Controllers/AdminController.php:1160
+ * @see app/Http/Controllers/AdminController.php:1185
  * @route '/admin/jamaah/{id}/members'
  */
 store.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -54,7 +54,7 @@ store.post = (args: { id: string | number } | [id: string | number ] | string | 
 
     /**
 * @see \App\Http\Controllers\AdminController::store
- * @see app/Http/Controllers/AdminController.php:1160
+ * @see app/Http/Controllers/AdminController.php:1185
  * @route '/admin/jamaah/{id}/members'
  */
     const storeForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -64,7 +64,7 @@ store.post = (args: { id: string | number } | [id: string | number ] | string | 
 
             /**
 * @see \App\Http\Controllers\AdminController::store
- * @see app/Http/Controllers/AdminController.php:1160
+ * @see app/Http/Controllers/AdminController.php:1185
  * @route '/admin/jamaah/{id}/members'
  */
         storeForm.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

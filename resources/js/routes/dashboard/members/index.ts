@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\DashboardController::store
- * @see app/Http/Controllers/DashboardController.php:138
+ * @see app/Http/Controllers/DashboardController.php:140
  * @route '/dashboard/members'
  */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\DashboardController::store
- * @see app/Http/Controllers/DashboardController.php:138
+ * @see app/Http/Controllers/DashboardController.php:140
  * @route '/dashboard/members'
  */
 store.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\DashboardController::store
- * @see app/Http/Controllers/DashboardController.php:138
+ * @see app/Http/Controllers/DashboardController.php:140
  * @route '/dashboard/members'
  */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -35,7 +35,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\DashboardController::store
- * @see app/Http/Controllers/DashboardController.php:138
+ * @see app/Http/Controllers/DashboardController.php:140
  * @route '/dashboard/members'
  */
     const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -45,7 +45,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\DashboardController::store
- * @see app/Http/Controllers/DashboardController.php:138
+ * @see app/Http/Controllers/DashboardController.php:140
  * @route '/dashboard/members'
  */
         storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -56,7 +56,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     store.form = storeForm
 /**
 * @see \App\Http\Controllers\DashboardController::update
- * @see app/Http/Controllers/DashboardController.php:195
+ * @see app/Http/Controllers/DashboardController.php:201
  * @route '/dashboard/members/{id}'
  */
 export const update = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -71,7 +71,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\DashboardController::update
- * @see app/Http/Controllers/DashboardController.php:195
+ * @see app/Http/Controllers/DashboardController.php:201
  * @route '/dashboard/members/{id}'
  */
 update.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -99,7 +99,7 @@ update.url = (args: { id: string | number } | [id: string | number ] | string | 
 
 /**
 * @see \App\Http\Controllers\DashboardController::update
- * @see app/Http/Controllers/DashboardController.php:195
+ * @see app/Http/Controllers/DashboardController.php:201
  * @route '/dashboard/members/{id}'
  */
 update.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -109,7 +109,7 @@ update.put = (args: { id: string | number } | [id: string | number ] | string | 
 
     /**
 * @see \App\Http\Controllers\DashboardController::update
- * @see app/Http/Controllers/DashboardController.php:195
+ * @see app/Http/Controllers/DashboardController.php:201
  * @route '/dashboard/members/{id}'
  */
     const updateForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -124,7 +124,7 @@ update.put = (args: { id: string | number } | [id: string | number ] | string | 
 
             /**
 * @see \App\Http\Controllers\DashboardController::update
- * @see app/Http/Controllers/DashboardController.php:195
+ * @see app/Http/Controllers/DashboardController.php:201
  * @route '/dashboard/members/{id}'
  */
         updateForm.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -140,7 +140,7 @@ update.put = (args: { id: string | number } | [id: string | number ] | string | 
     update.form = updateForm
 /**
 * @see \App\Http\Controllers\DashboardController::documents
- * @see app/Http/Controllers/DashboardController.php:227
+ * @see app/Http/Controllers/DashboardController.php:234
  * @route '/dashboard/members/{id}/documents'
  */
 export const documents = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -155,7 +155,7 @@ documents.definition = {
 
 /**
 * @see \App\Http\Controllers\DashboardController::documents
- * @see app/Http/Controllers/DashboardController.php:227
+ * @see app/Http/Controllers/DashboardController.php:234
  * @route '/dashboard/members/{id}/documents'
  */
 documents.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -183,7 +183,7 @@ documents.url = (args: { id: string | number } | [id: string | number ] | string
 
 /**
 * @see \App\Http\Controllers\DashboardController::documents
- * @see app/Http/Controllers/DashboardController.php:227
+ * @see app/Http/Controllers/DashboardController.php:234
  * @route '/dashboard/members/{id}/documents'
  */
 documents.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -193,7 +193,7 @@ documents.post = (args: { id: string | number } | [id: string | number ] | strin
 
     /**
 * @see \App\Http\Controllers\DashboardController::documents
- * @see app/Http/Controllers/DashboardController.php:227
+ * @see app/Http/Controllers/DashboardController.php:234
  * @route '/dashboard/members/{id}/documents'
  */
     const documentsForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -203,7 +203,7 @@ documents.post = (args: { id: string | number } | [id: string | number ] | strin
 
             /**
 * @see \App\Http\Controllers\DashboardController::documents
- * @see app/Http/Controllers/DashboardController.php:227
+ * @see app/Http/Controllers/DashboardController.php:234
  * @route '/dashboard/members/{id}/documents'
  */
         documentsForm.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

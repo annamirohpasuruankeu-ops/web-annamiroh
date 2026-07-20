@@ -136,7 +136,7 @@ export default function PasswordReminder({ passwordRules }: Props) {
                                     variant="outline"
                                     className="flex-1 rounded-xl py-3 font-bold"
                                 >
-                                    <Link href="/admin">
+                                    <Link href="/admin/packages">
                                         Lewati untuk Saat Ini
                                     </Link>
                                 </Button>

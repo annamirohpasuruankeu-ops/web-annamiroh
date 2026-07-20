@@ -16,7 +16,7 @@ class FinanceController extends Controller
     public function index(Request $request)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'pusat'])) {
+        if (!in_array($role, ['admin', 'admin_keuangan'])) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -133,7 +133,7 @@ class FinanceController extends Controller
     public function store(Request $request)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'pusat'])) {
+        if (!in_array($role, ['admin', 'admin_keuangan'])) {
             abort(403);
         }
 
@@ -155,7 +155,7 @@ class FinanceController extends Controller
     public function update(Request $request, $id)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'pusat'])) {
+        if (!in_array($role, ['admin', 'admin_keuangan'])) {
             abort(403);
         }
 
@@ -187,7 +187,7 @@ class FinanceController extends Controller
     public function destroy(Request $request, $id)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'pusat'])) {
+        if (!in_array($role, ['admin', 'admin_keuangan'])) {
             abort(403);
         }
 
@@ -200,7 +200,7 @@ class FinanceController extends Controller
     public function import(Request $request)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'pusat'])) {
+        if (!in_array($role, ['admin', 'admin_keuangan'])) {
             abort(403);
         }
 

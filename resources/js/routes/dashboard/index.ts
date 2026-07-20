@@ -3,7 +3,7 @@ import members from './members'
 import bookings from './bookings'
 /**
 * @see \App\Http\Controllers\DashboardController::documents
- * @see app/Http/Controllers/DashboardController.php:112
+ * @see app/Http/Controllers/DashboardController.php:114
  * @route '/dashboard/documents'
  */
 export const documents = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -18,7 +18,7 @@ documents.definition = {
 
 /**
 * @see \App\Http\Controllers\DashboardController::documents
- * @see app/Http/Controllers/DashboardController.php:112
+ * @see app/Http/Controllers/DashboardController.php:114
  * @route '/dashboard/documents'
  */
 documents.url = (options?: RouteQueryOptions) => {
@@ -27,7 +27,7 @@ documents.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\DashboardController::documents
- * @see app/Http/Controllers/DashboardController.php:112
+ * @see app/Http/Controllers/DashboardController.php:114
  * @route '/dashboard/documents'
  */
 documents.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -37,7 +37,7 @@ documents.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\DashboardController::documents
- * @see app/Http/Controllers/DashboardController.php:112
+ * @see app/Http/Controllers/DashboardController.php:114
  * @route '/dashboard/documents'
  */
     const documentsForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -47,7 +47,7 @@ documents.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\DashboardController::documents
- * @see app/Http/Controllers/DashboardController.php:112
+ * @see app/Http/Controllers/DashboardController.php:114
  * @route '/dashboard/documents'
  */
         documentsForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

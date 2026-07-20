@@ -37,14 +37,19 @@ export default function Agents({
     agents,
     filters,
     importResult,
+    userRole,
 }: PageProps<{
     agents: any;
     filters?: any;
     importResult?: ImportResult | null;
+    userRole: string;
 }>) {
+    const canManage = userRole === 'admin';
     const [search, setSearch] = useState(filters?.search || '');
     const [showModal, setShowModal] = useState(false);
-    const [showImportModal, setShowImportModal] = useState(Boolean(importResult));
+    const [showImportModal, setShowImportModal] = useState(
+        Boolean(importResult),
+    );
     const [editingId, setEditingId] = useState<number | null>(null);
 
     const { data, setData, post, put, reset, processing, errors } = useForm({
@@ -107,8 +112,8 @@ export default function Agents({
 
     const downloadImportReport = () => {
         if (!importResult) {
-return;
-}
+            return;
+        }
 
         const escape = (value: string | number) =>
             `"${String(value).replace(/"/g, '""')}"`;
@@ -189,23 +194,27 @@ return;
                             className="border-slate-200 pl-9"
                         />
                     </div>
-                    <Button
-                        onClick={() => setShowImportModal(true)}
-                        variant="outline"
-                        className="flex h-10 w-full items-center justify-center gap-2 rounded-xl border-emerald-600 px-5 font-bold text-emerald-700 transition-transform hover:scale-105 hover:bg-emerald-50 active:scale-95 md:w-auto"
-                    >
-                        <FileSpreadsheet size={18} /> Import Excel
-                    </Button>
-                    <Button
-                        onClick={openAdd}
-                        className="flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-6 font-bold text-white shadow-lg shadow-emerald-600/20 transition-transform hover:scale-105 hover:bg-emerald-700 active:scale-95 md:w-auto"
-                    >
-                        <UserPlus size={18} /> Tambah Agen
-                    </Button>
+                    {canManage && (
+                        <Button
+                            onClick={() => setShowImportModal(true)}
+                            variant="outline"
+                            className="flex h-10 w-full items-center justify-center gap-2 rounded-xl border-emerald-600 px-5 font-bold text-emerald-700 transition-transform hover:scale-105 hover:bg-emerald-50 active:scale-95 md:w-auto"
+                        >
+                            <FileSpreadsheet size={18} /> Import Excel
+                        </Button>
+                    )}
+                    {canManage && (
+                        <Button
+                            onClick={openAdd}
+                            className="flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-6 font-bold text-white shadow-lg shadow-emerald-600/20 transition-transform hover:scale-105 hover:bg-emerald-700 active:scale-95 md:w-auto"
+                        >
+                            <UserPlus size={18} /> Tambah Agen
+                        </Button>
+                    )}
                 </div>
             </div>
 
-            {showModal && (
+            {canManage && showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
                     <div className="flex max-h-[90vh] w-full max-w-2xl animate-in flex-col overflow-hidden rounded-3xl bg-white p-0 shadow-2xl duration-200 zoom-in-95">
                         <div className="relative flex items-center justify-between overflow-hidden bg-emerald-900 p-6 text-white">
@@ -381,7 +390,7 @@ return;
                 </div>
             )}
 
-            {showImportModal && (
+            {canManage && showImportModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
                     <div
                         className={`flex max-h-[90vh] w-full ${importResult ? 'max-w-4xl' : 'max-w-lg'} animate-in flex-col overflow-hidden rounded-3xl bg-white p-0 shadow-2xl duration-200 zoom-in-95`}
@@ -709,26 +718,38 @@ return;
                                         </div>
                                     </td>
                                     <td className="px-6 py-5">
-                                        <button
-                                            onClick={() => toggleStatus(a.id)}
-                                            className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold tracking-wider uppercase transition-all hover:shadow-md active:scale-95 ${
-                                                a.is_active
-                                                    ? 'border border-emerald-200 bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
-                                                    : 'border border-amber-200 bg-amber-100 text-amber-700 hover:bg-amber-200'
-                                            }`}
-                                            title={
-                                                a.is_active
-                                                    ? 'Klik untuk menonaktifkan'
-                                                    : 'Klik untuk verifikasi / aktifkan'
-                                            }
-                                        >
-                                            <div
-                                                className={`h-2 w-2 rounded-full ${a.is_active ? 'animate-pulse bg-emerald-500' : 'bg-amber-500'}`}
-                                            ></div>
-                                            {a.is_active
-                                                ? 'Aktif'
-                                                : 'Menunggu Verifikasi'}
-                                        </button>
+                                        {canManage ? (
+                                            <button
+                                                onClick={() =>
+                                                    toggleStatus(a.id)
+                                                }
+                                                className={`inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-bold tracking-wider uppercase transition-all hover:shadow-md active:scale-95 ${
+                                                    a.is_active
+                                                        ? 'border border-emerald-200 bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                                                        : 'border border-amber-200 bg-amber-100 text-amber-700 hover:bg-amber-200'
+                                                }`}
+                                                title={
+                                                    a.is_active
+                                                        ? 'Klik untuk menonaktifkan'
+                                                        : 'Klik untuk verifikasi / aktifkan'
+                                                }
+                                            >
+                                                <div
+                                                    className={`h-2 w-2 rounded-full ${a.is_active ? 'animate-pulse bg-emerald-500' : 'bg-amber-500'}`}
+                                                ></div>
+                                                {a.is_active
+                                                    ? 'Aktif'
+                                                    : 'Menunggu Verifikasi'}
+                                            </button>
+                                        ) : (
+                                            <span
+                                                className={`inline-flex rounded-full px-3 py-1.5 text-[11px] font-bold ${a.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}
+                                            >
+                                                {a.is_active
+                                                    ? 'Aktif'
+                                                    : 'Menunggu Verifikasi'}
+                                            </span>
+                                        )}
                                     </td>
                                     <td className="px-6 py-5">
                                         <div className="font-medium text-slate-700">
@@ -742,18 +763,20 @@ return;
                                         </div>
                                     </td>
                                     <td className="px-6 py-5 text-right">
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => openEdit(a)}
-                                            className="rounded-lg border-emerald-200 bg-emerald-50 font-bold text-emerald-700 shadow-sm hover:bg-emerald-100 hover:text-emerald-800"
-                                        >
-                                            <Edit3
-                                                size={14}
-                                                className="mr-1.5"
-                                            />{' '}
-                                            Edit
-                                        </Button>
+                                        {canManage && (
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => openEdit(a)}
+                                                className="rounded-lg border-emerald-200 bg-emerald-50 font-bold text-emerald-700 shadow-sm hover:bg-emerald-100 hover:text-emerald-800"
+                                            >
+                                                <Edit3
+                                                    size={14}
+                                                    className="mr-1.5"
+                                                />{' '}
+                                                Edit
+                                            </Button>
+                                        )}
                                     </td>
                                 </tr>
                             ))}

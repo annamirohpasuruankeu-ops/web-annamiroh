@@ -8,13 +8,14 @@ use App\Models\Package;
 use App\Models\Booking;
 use App\Models\Order;
 use App\Models\User;
+use App\Support\ManifestLock;
 
 class DashboardController extends Controller
 {
     public function index(Request $request)
     {
         $user = $request->user();
-        if ($user->role === 'admin' || $user->role === 'pusat') {
+        if (in_array($user->role, ['admin', 'pusat', 'admin_paket', 'admin_manifest', 'admin_keuangan'], true)) {
             return redirect('/admin');
         }
         if ($user->role === 'agen') {
@@ -47,6 +48,7 @@ class DashboardController extends Controller
 
         $user = $request->user();
         $package = Package::findOrFail($request->package_id);
+        ManifestLock::ensurePackageEditable($package);
 
         // Verify all selected members belong to the authenticated user
         $members = $user->jamaahMembers()->whereIn('id', $request->jamaah_member_ids)->get();
@@ -160,12 +162,16 @@ class DashboardController extends Controller
         $validated['vm'] = $validated['vm'] ?? '-';
         $validated['vp'] = $validated['vp'] ?? '-';
 
-        $member = $request->user()->jamaahMembers()->create($validated);
-
         // Automatically enroll into active package manifest if user has an active booking order
         $latestOrder = \App\Models\Order::where('user_id', $request->user()->id)
             ->orderBy('created_at', 'desc')
             ->first();
+
+        if ($latestOrder) {
+            ManifestLock::ensurePackageEditable($latestOrder->package_id);
+        }
+
+        $member = $request->user()->jamaahMembers()->create($validated);
 
         if ($latestOrder) {
             $exists = \App\Models\Booking::where('order_id', $latestOrder->id)
@@ -195,6 +201,7 @@ class DashboardController extends Controller
     public function updateJamaahMember(Request $request, $id)
     {
         $member = $request->user()->jamaahMembers()->findOrFail($id);
+        ManifestLock::ensureMemberEditable($member);
 
         $validated = $request->validate([
             'name' => 'required|string',
@@ -232,6 +239,7 @@ class DashboardController extends Controller
         ]);
 
         $member = $request->user()->jamaahMembers()->findOrFail($id);
+        ManifestLock::ensureMemberEditable($member);
 
         $type = $request->document_type;
         $field = $type . '_file';

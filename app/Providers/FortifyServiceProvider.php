@@ -77,7 +77,7 @@ class FortifyServiceProvider extends ServiceProvider
                         return redirect()->route('password-reminder');
                     }
                     
-                    $home = in_array($role, ['admin', 'pusat', 'agen']) ? '/admin' : '/dashboard';
+                    $home = in_array($role, ['admin', 'pusat', 'admin_paket', 'admin_manifest', 'admin_keuangan', 'agen']) ? '/admin' : '/dashboard';
                     
                     return redirect()->intended($home);
                 }
@@ -108,7 +108,7 @@ class FortifyServiceProvider extends ServiceProvider
                         return redirect('/dashboard?book_package_id=' . $packageId);
                     }
                     
-                    $home = in_array($role, ['admin', 'pusat', 'agen']) ? '/admin' : '/dashboard';
+                    $home = in_array($role, ['admin', 'pusat', 'admin_paket', 'admin_manifest', 'admin_keuangan', 'agen']) ? '/admin' : '/dashboard';
                     
                     return redirect($home);
                 }

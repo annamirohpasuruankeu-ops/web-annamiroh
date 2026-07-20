@@ -13,7 +13,7 @@ class InvoiceController extends Controller
     public function index(Request $request)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'pusat', 'agen'])) {
+        if (!in_array($role, ['admin', 'admin_keuangan', 'agen'])) {
             abort(403);
         }
 
@@ -111,7 +111,7 @@ class InvoiceController extends Controller
     public function import(Request $request)
     {
         $role = $request->user()->role;
-        if (!in_array($role, ['admin', 'pusat'])) {
+        if (!in_array($role, ['admin', 'admin_keuangan'])) {
             abort(403);
         }
 

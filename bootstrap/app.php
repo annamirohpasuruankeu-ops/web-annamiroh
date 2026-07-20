@@ -15,6 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->alias([
+            'role' => \App\Http\Middleware\RequireRole::class,
+        ]);
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
 
         $middleware->web(append: [
@@ -27,7 +30,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectUsersTo(function (Request $request) {
             if (auth()->check()) {
                 $role = auth()->user()->role;
-                return in_array($role, ['admin', 'pusat', 'agen']) ? '/admin' : '/dashboard';
+                return in_array($role, ['admin', 'pusat', 'admin_paket', 'admin_manifest', 'admin_keuangan', 'agen']) ? '/admin' : '/dashboard';
             }
             return '/dashboard';
         });

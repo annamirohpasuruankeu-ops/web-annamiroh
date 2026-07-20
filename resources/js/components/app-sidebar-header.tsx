@@ -21,8 +21,11 @@ export function AppSidebarHeader({
     const getInitials = useInitials();
     const userRole = auth.user?.role || 'user';
     const roleMap: Record<string, string> = {
-        admin: 'Administrator',
-        pusat: 'Pusat',
+        admin: 'Super Admin',
+        pusat: 'Admin Pusat',
+        admin_paket: 'Admin Paket',
+        admin_manifest: 'Admin Manifest',
+        admin_keuangan: 'Admin Keuangan',
         agen: 'Agen Cabang',
         user: 'Jamaah',
     };

@@ -87,6 +87,7 @@ export default function Invoices({
         kurang: number;
     } | null;
     filters: any;
+    errors?: Record<string, string>;
 }>) {
     const userRole = auth?.user?.role || 'user';
     const [search, setSearch] = useState(filters?.search || '');
@@ -192,7 +193,7 @@ export default function Invoices({
                             : 'Kelola data tagihan/invoice dan pantau pelunasan dari masing-masing agen.'}
                     </p>
                 </div>
-                {['admin', 'pusat'].includes(userRole) && (
+                {['admin', 'admin_keuangan'].includes(userRole) && (
                     <Button
                         onClick={() => setShowImportModal(true)}
                         className="flex items-center gap-2 rounded-xl bg-emerald-700 px-5 py-2.5 text-xs font-extrabold text-white shadow-md transition-all hover:bg-emerald-800"
@@ -297,7 +298,7 @@ export default function Invoices({
             </div>
 
             {/* Tabs for Admin / Pusat */}
-            {['admin', 'pusat'].includes(userRole) && (
+            {['admin', 'admin_keuangan'].includes(userRole) && (
                 <div className="mb-6 flex border-b border-slate-200">
                     <button
                         onClick={() => setActiveTab('summary')}
@@ -323,7 +324,7 @@ export default function Invoices({
             )}
 
             {/* TAB CONTENT: Summary per Agent */}
-            {['admin', 'pusat'].includes(userRole) &&
+            {['admin', 'admin_keuangan'].includes(userRole) &&
                 activeTab === 'summary' && (
                     <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
                         <div className="overflow-x-auto">
@@ -435,7 +436,7 @@ export default function Invoices({
             {activeTab === 'details' && (
                 <div className="space-y-4">
                     {/* Search & Filter Form for Admin */}
-                    {['admin', 'pusat'].includes(userRole) && (
+                    {['admin', 'admin_keuangan'].includes(userRole) && (
                         <form
                             onSubmit={handleSearchSubmit}
                             className="flex flex-col items-end gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:flex-row"
@@ -641,9 +642,9 @@ export default function Invoices({
                             onSubmit={handleImportSubmit}
                             className="space-y-4 p-6"
                         >
-                            {errors.message && (
+                            {errors?.message && (
                                 <div className="text-red-650 rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-bold">
-                                    {errors.message}
+                                    {errors?.message}
                                 </div>
                             )}
 

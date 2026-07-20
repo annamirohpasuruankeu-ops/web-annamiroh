@@ -11,6 +11,8 @@ import {
     ClipboardList,
     Coins,
     FileText,
+    ShieldCheck,
+    FileCheck2,
 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
@@ -92,6 +94,16 @@ const adminNavItems: NavItem[] = [
         href: '/admin/invoices',
         icon: FileText,
     },
+    {
+        title: 'Finalisasi Manifest',
+        href: '/admin/manifests',
+        icon: FileCheck2,
+    },
+    {
+        title: 'Manajemen Admin',
+        href: '/admin/admin-users',
+        icon: ShieldCheck,
+    },
 ];
 
 const footerNavItems: NavItem[] = [
@@ -111,12 +123,17 @@ export function AppSidebar() {
     const { auth } = usePage<any>().props;
     const userRole = auth?.user?.role || 'user';
 
-    const logoUrl =
-        userRole === 'admin' || userRole === 'pusat'
-            ? '/admin'
-            : userRole === 'agen'
-              ? '/admin/jamaah'
-              : '/dashboard';
+    const logoUrl = [
+        'admin',
+        'pusat',
+        'admin_paket',
+        'admin_manifest',
+        'admin_keuangan',
+    ].includes(userRole)
+        ? '/admin'
+        : userRole === 'agen'
+          ? '/admin/jamaah'
+          : '/dashboard';
 
     return (
         <Sidebar
@@ -140,13 +157,122 @@ export function AppSidebar() {
 
             <SidebarContent>
                 {userRole === 'user' && <NavMain items={mainNavItems} />}
-                {['admin', 'pusat'].includes(userRole) && (
+                {userRole === 'admin' && (
                     <>
                         <div className="mt-4 px-5 py-3 text-xs font-bold tracking-wider text-emerald-300/70 uppercase">
                             Menu Admin
                         </div>
                         <NavMain items={adminNavItems} />
                     </>
+                )}
+                {userRole === 'admin_paket' && (
+                    <NavMain
+                        items={[
+                            {
+                                title: 'Dashboard',
+                                href: '/admin',
+                                icon: LayoutGrid,
+                            },
+                            {
+                                title: 'Data Paket',
+                                href: '/admin/packages',
+                                icon: FolderGit2,
+                            },
+                            {
+                                title: 'Booking Order',
+                                href: '/admin/orders',
+                                icon: ClipboardList,
+                            },
+                        ]}
+                    />
+                )}
+                {userRole === 'admin_manifest' && (
+                    <NavMain
+                        items={[
+                            {
+                                title: 'Dashboard',
+                                href: '/admin',
+                                icon: LayoutGrid,
+                            },
+                            {
+                                title: 'Booking Order',
+                                href: '/admin/orders',
+                                icon: ClipboardList,
+                            },
+                            {
+                                title: 'Rekomendasi Paspor',
+                                href: '/admin/recommendations',
+                                icon: FileText,
+                            },
+                            {
+                                title: 'Data Paket',
+                                href: '/admin/packages',
+                                icon: FolderGit2,
+                            },
+                            {
+                                title: 'Database Jamaah',
+                                href: '/admin/jamaah-database',
+                                icon: Users,
+                            },
+                            {
+                                title: 'Manifest Keberangkatan',
+                                href: '/admin/jamaah',
+                                icon: BookOpen,
+                            },
+                            {
+                                title: 'Finalisasi Manifest',
+                                href: '/admin/manifests',
+                                icon: FileCheck2,
+                            },
+                        ]}
+                    />
+                )}
+                {userRole === 'admin_keuangan' && (
+                    <NavMain
+                        items={[
+                            {
+                                title: 'Dashboard',
+                                href: '/admin',
+                                icon: LayoutGrid,
+                            },
+                            {
+                                title: 'Kelola Keuangan',
+                                href: '/admin/finance',
+                                icon: Coins,
+                            },
+                            {
+                                title: 'Tagihan Keagenan',
+                                href: '/admin/invoices',
+                                icon: FileText,
+                            },
+                            {
+                                title: 'Booking Order',
+                                href: '/admin/orders',
+                                icon: ClipboardList,
+                            },
+                            {
+                                title: 'Data Agen',
+                                href: '/admin/agents',
+                                icon: Users,
+                            },
+                            {
+                                title: 'Data Paket',
+                                href: '/admin/packages',
+                                icon: FolderGit2,
+                            },
+                        ]}
+                    />
+                )}
+                {userRole === 'pusat' && (
+                    <NavMain
+                        items={[
+                            {
+                                title: 'Manifest Final',
+                                href: '/admin/manifests',
+                                icon: FileCheck2,
+                            },
+                        ]}
+                    />
                 )}
                 {userRole === 'agen' && (
                     <>

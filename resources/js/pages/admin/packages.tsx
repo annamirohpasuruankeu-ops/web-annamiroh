@@ -31,7 +31,10 @@ export default function Packages({
     const [showModal, setShowModal] = useState(false);
     const [editingId, setEditingId] = useState<number | null>(null);
 
-    const isAgent = userRole === 'agen';
+    const isAgent = ['agen', 'admin_manifest', 'admin_keuangan'].includes(
+        userRole,
+    );
+    const isActualAgent = userRole === 'agen';
 
     const { data, setData, post, reset, processing, transform, errors } =
         useForm({
@@ -684,7 +687,7 @@ export default function Packages({
                                         </div>
                                     </td>
                                     <td className="px-6 py-5">
-                                        {isAgent ? (
+                                        {isActualAgent ? (
                                             <>
                                                 <div className="text-base font-extrabold text-emerald-600">
                                                     Rp{' '}

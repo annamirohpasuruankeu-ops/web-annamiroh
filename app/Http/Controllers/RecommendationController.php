@@ -14,7 +14,7 @@ class RecommendationController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        if (!in_array($user->role, ['admin', 'pusat', 'agen'])) {
+        if (!in_array($user->role, ['admin', 'admin_manifest', 'agen'])) {
             abort(403, 'Unauthorized access.');
         }
 
@@ -88,7 +88,7 @@ class RecommendationController extends Controller
     public function store(Request $request)
     {
         $user = $request->user();
-        if ($user->role !== 'agen') {
+        if (!in_array($user->role, ['admin', 'admin_manifest'], true)) {
             abort(403, 'Hanya agen yang dapat mengajukan rekomendasi.');
         }
 
@@ -118,7 +118,7 @@ class RecommendationController extends Controller
     public function approve(Request $request, $id)
     {
         $user = $request->user();
-        if (!in_array($user->role, ['admin', 'pusat'])) {
+        if (!in_array($user->role, ['admin', 'admin_manifest'])) {
             abort(403, 'Hanya admin yang dapat menyetujui pengajuan.');
         }
 
@@ -147,7 +147,7 @@ class RecommendationController extends Controller
     public function reject(Request $request, $id)
     {
         $user = $request->user();
-        if (!in_array($user->role, ['admin', 'pusat'])) {
+        if (!in_array($user->role, ['admin', 'admin_manifest'])) {
             abort(403, 'Hanya admin yang dapat menolak pengajuan.');
         }
 
@@ -172,7 +172,7 @@ class RecommendationController extends Controller
     public function searchJamaah(Request $request)
     {
         $user = $request->user();
-        if (!in_array($user->role, ['admin', 'pusat', 'agen'])) {
+        if (!in_array($user->role, ['admin', 'admin_manifest', 'agen'])) {
             abort(403);
         }
 
@@ -211,7 +211,7 @@ class RecommendationController extends Controller
     public function print(Request $request, $id)
     {
         $user = $request->user();
-        if (!in_array($user->role, ['admin', 'pusat', 'agen'])) {
+        if (!in_array($user->role, ['admin', 'admin_manifest', 'agen'])) {
             abort(403);
         }
 
