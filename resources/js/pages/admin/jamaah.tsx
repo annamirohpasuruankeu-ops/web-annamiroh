@@ -32,6 +32,9 @@ interface JamaahMember {
     vm: string;
     vp: string;
     paspor_file: string | null;
+    paspor_second_file: string | null;
+    ktp_file: string | null;
+    kk_file: string | null;
     vaksin_file: string | null;
     user?: {
         name: string;
@@ -108,6 +111,9 @@ export default function Jamaahs({
         vm: '-',
         vp: '-',
         paspor_file: null as File | null,
+        paspor_second_file: null as File | null,
+        ktp_file: null as File | null,
+        kk_file: null as File | null,
         vaksin_file: null as File | null,
     });
 
@@ -139,6 +145,9 @@ export default function Jamaahs({
             vm: member.vm || '-',
             vp: member.vp || '-',
             paspor_file: null,
+            paspor_second_file: null,
+            ktp_file: null,
+            kk_file: null,
             vaksin_file: null,
         });
         setShowModal(true);
@@ -846,6 +855,71 @@ export default function Jamaahs({
                                                 ✓ File Tersimpan
                                             </span>
                                         )}
+                                </div>
+                                <div>
+                                    <Label className="mb-1 block text-xs font-bold text-slate-700">
+                                        Unggah Paspor Lembar Kedua (Ganti)
+                                    </Label>
+                                    <Input
+                                        type="file"
+                                        accept=".jpg,.jpeg,.png,.pdf"
+                                        onChange={(e) =>
+                                            setData(
+                                                'paspor_second_file',
+                                                e.target.files?.[0] || null,
+                                            )
+                                        }
+                                        className="border-slate-305 cursor-pointer bg-slate-50 text-xs"
+                                    />
+                                    {editingMember.paspor_second_file &&
+                                        !data.paspor_second_file && (
+                                            <span className="mt-1 block text-[10px] font-extrabold text-emerald-600">
+                                                ✓ File Tersimpan
+                                            </span>
+                                        )}
+                                </div>
+                                <div>
+                                    <Label className="mb-1 block text-xs font-bold text-slate-700">
+                                        Unggah KTP (Ganti)
+                                    </Label>
+                                    <Input
+                                        type="file"
+                                        accept=".jpg,.jpeg,.png,.pdf"
+                                        onChange={(e) =>
+                                            setData(
+                                                'ktp_file',
+                                                e.target.files?.[0] || null,
+                                            )
+                                        }
+                                        className="border-slate-305 cursor-pointer bg-slate-50 text-xs"
+                                    />
+                                    {editingMember.ktp_file &&
+                                        !data.ktp_file && (
+                                            <span className="mt-1 block text-[10px] font-extrabold text-emerald-600">
+                                                ✓ File Tersimpan
+                                            </span>
+                                        )}
+                                </div>
+                                <div>
+                                    <Label className="mb-1 block text-xs font-bold text-slate-700">
+                                        Unggah KK (Ganti)
+                                    </Label>
+                                    <Input
+                                        type="file"
+                                        accept=".jpg,.jpeg,.png,.pdf"
+                                        onChange={(e) =>
+                                            setData(
+                                                'kk_file',
+                                                e.target.files?.[0] || null,
+                                            )
+                                        }
+                                        className="border-slate-305 cursor-pointer bg-slate-50 text-xs"
+                                    />
+                                    {editingMember.kk_file && !data.kk_file && (
+                                        <span className="mt-1 block text-[10px] font-extrabold text-emerald-600">
+                                            ✓ File Tersimpan
+                                        </span>
+                                    )}
                                 </div>
                                 <div>
                                     <Label className="mb-1 block text-xs font-bold text-slate-700">
