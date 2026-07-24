@@ -271,7 +271,7 @@ class ManifestFinalizationController extends Controller
                 }
                 $cell = $sheet->getCell($column.$excelRow);
                 $cell->setValue('Buka Berkas');
-                $cell->getHyperlink()->setUrl(asset('storage-file/'.$path));
+                $cell->getHyperlink()->setUrl(route('storage-file.download', ['path' => $path]));
                 $sheet->getStyle($column.$excelRow)->getFont()->setUnderline(true)->getColor()->setRGB('0563C1');
             }
         }

@@ -17,6 +17,52 @@ Route::get('/storage-file/{path}', function (string $path) {
     return Storage::disk('public')->response($path);
 })->where('path', '.*');
 
+// Unduhan publik untuk hyperlink dokumen pada file manifest.
+// Path dikirim melalui query string agar tetap bekerja pada hosting yang
+// menganggap slash pada parameter route sebagai folder fisik.
+Route::get('/download-file', function (\Illuminate\Http\Request $request) {
+    $path = rawurldecode((string) $request->query('path', ''));
+    $path = ltrim(str_replace('\\', '/', $path), '/');
+
+    // Mendukung data lama yang mungkin menyimpan awalan URL storage.
+    foreach (['storage-file/', 'storage/'] as $prefix) {
+        if (str_starts_with($path, $prefix)) {
+            $path = substr($path, strlen($prefix));
+        }
+    }
+
+    abort_if(
+        $path === ''
+        || str_contains($path, '..')
+        || !Storage::disk('public')->exists($path),
+        404
+    );
+
+    return Storage::disk('public')->download($path, basename($path));
+})->name('storage-file.download');
+
+// Kompatibilitas untuk hyperlink manifest lama:
+// /download-file/documents/nama-file.jpg
+Route::get('/download-file/{path}', function (string $path) {
+    $path = rawurldecode($path);
+    $path = ltrim(str_replace('\\', '/', $path), '/');
+
+    foreach (['storage-file/', 'storage/'] as $prefix) {
+        if (str_starts_with($path, $prefix)) {
+            $path = substr($path, strlen($prefix));
+        }
+    }
+
+    abort_if(
+        $path === ''
+        || str_contains($path, '..')
+        || !Storage::disk('public')->exists($path),
+        404
+    );
+
+    return Storage::disk('public')->download($path, basename($path));
+})->where('path', '.*')->name('storage-file.download.legacy');
+
 Route::get('/kategori-program/umroh-reguler', [PublicPackageController::class, 'index'])->name('packages.reguler');
 Route::get('/paket-umroh/{package}', [PublicPackageController::class, 'show'])->name('packages.show');
 

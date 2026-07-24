@@ -34,11 +34,24 @@ interface PaxRow {
     vm: string;
     vp: string;
     paspor_file_url: string | null;
+    paspor_second_file_url: string | null;
+    ktp_file_url: string | null;
+    kk_file_url: string | null;
     vaksin_file_url: string | null;
     // Client-only fields
     paspor_file?: File | null;
+    paspor_second_file?: File | null;
+    ktp_file?: File | null;
+    kk_file?: File | null;
     vaksin_file?: File | null;
 }
+
+type DocumentFileField =
+    | 'paspor_file'
+    | 'paspor_second_file'
+    | 'ktp_file'
+    | 'kk_file'
+    | 'vaksin_file';
 
 export default function IsiJamaah({
     order,
@@ -108,6 +121,10 @@ export default function IsiJamaah({
             vm: member.vm || '-',
             vp: member.vp || '-',
             paspor_file_url: member.paspor_file_url || null,
+            paspor_second_file_url:
+                member.paspor_second_file_url || null,
+            ktp_file_url: member.ktp_file_url || null,
+            kk_file_url: member.kk_file_url || null,
             vaksin_file_url: member.vaksin_file_url || null,
         };
         setRows(newRows);
@@ -145,7 +162,7 @@ export default function IsiJamaah({
 
     const handleFileChange = (
         index: number,
-        field: 'paspor_file' | 'vaksin_file',
+        field: DocumentFileField,
         file: File | null,
     ) => {
         const newRows = [...rows];
@@ -214,6 +231,18 @@ export default function IsiJamaah({
             if (row.paspor_file) {
                 formData.append(`paspor_file_${index}`, row.paspor_file);
             }
+            if (row.paspor_second_file) {
+                formData.append(
+                    `paspor_second_file_${index}`,
+                    row.paspor_second_file,
+                );
+            }
+            if (row.ktp_file) {
+                formData.append(`ktp_file_${index}`, row.ktp_file);
+            }
+            if (row.kk_file) {
+                formData.append(`kk_file_${index}`, row.kk_file);
+            }
             if (row.vaksin_file) {
                 formData.append(`vaksin_file_${index}`, row.vaksin_file);
             }
@@ -223,6 +252,66 @@ export default function IsiJamaah({
             forceFormData: true,
             onFinish: () => setProcessing(false),
         });
+    };
+
+    const renderDocumentUpload = (
+        row: PaxRow,
+        index: number,
+        field: DocumentFileField,
+        urlField:
+            | 'paspor_file_url'
+            | 'paspor_second_file_url'
+            | 'ktp_file_url'
+            | 'kk_file_url'
+            | 'vaksin_file_url',
+    ) => {
+        const selectedFile = row[field];
+        const existingUrl = row[urlField];
+        const inputId = `${field}-upload-${index}`;
+
+        return (
+            <td className="px-3 py-2.5">
+                <div className="flex items-center gap-2">
+                    <input
+                        type="file"
+                        id={inputId}
+                        className="hidden"
+                        accept=".jpg,.jpeg,.png,.pdf"
+                        onChange={(e) =>
+                            handleFileChange(
+                                index,
+                                field,
+                                e.target.files?.[0] || null,
+                            )
+                        }
+                    />
+                    <label
+                        htmlFor={inputId}
+                        className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-100 px-2.5 py-1.5 text-[11px] font-bold text-slate-700 transition-colors hover:bg-slate-200"
+                    >
+                        <FileUp size={13} /> Upload
+                    </label>
+                    {selectedFile && (
+                        <span
+                            className="max-w-[80px] truncate text-[10px] font-extrabold text-emerald-600"
+                            title={selectedFile.name}
+                        >
+                            ✓ {selectedFile.name}
+                        </span>
+                    )}
+                    {!selectedFile && existingUrl && (
+                        <a
+                            href={existingUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-0.5 text-[11px] font-extrabold text-emerald-700 hover:underline"
+                        >
+                            <ShieldCheck size={12} /> Lihat
+                        </a>
+                    )}
+                </div>
+            </td>
+        );
     };
 
     return (
@@ -358,6 +447,15 @@ export default function IsiJamaah({
                                 </th>
                                 <th className="w-48 px-4 py-3.5 text-[10px] tracking-wider uppercase">
                                     Upload Paspor
+                                </th>
+                                <th className="w-48 px-4 py-3.5 text-[10px] tracking-wider uppercase">
+                                    Paspor Lembar Kedua
+                                </th>
+                                <th className="w-48 px-4 py-3.5 text-[10px] tracking-wider uppercase">
+                                    Upload KTP
+                                </th>
+                                <th className="w-48 px-4 py-3.5 text-[10px] tracking-wider uppercase">
+                                    Upload KK
                                 </th>
                                 <th className="w-48 px-4 py-3.5 text-[10px] tracking-wider uppercase">
                                     Upload Vaksin
@@ -641,115 +739,36 @@ export default function IsiJamaah({
                                             </select>
                                         </td>
 
-                                        {/* UPLOAD PASSPORT */}
-                                        <td className="px-3 py-2.5">
-                                            <div className="flex items-center gap-2">
-                                                <input
-                                                    type="file"
-                                                    id={`paspor-upload-${index}`}
-                                                    className="hidden"
-                                                    accept=".jpg,.jpeg,.png,.pdf"
-                                                    onChange={(e) => {
-                                                        const file =
-                                                            e.target
-                                                                .files?.[0] ||
-                                                            null;
-                                                        handleFileChange(
-                                                            index,
-                                                            'paspor_file',
-                                                            file,
-                                                        );
-                                                    }}
-                                                />
-                                                <label
-                                                    htmlFor={`paspor-upload-${index}`}
-                                                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-100 px-2.5 py-1.5 text-[11px] font-bold text-slate-700 transition-colors hover:bg-slate-200"
-                                                >
-                                                    <FileUp size={13} /> Upload
-                                                </label>
-                                                {row.paspor_file && (
-                                                    <span
-                                                        className="max-w-[80px] truncate text-[10px] font-extrabold text-emerald-600"
-                                                        title={
-                                                            row.paspor_file.name
-                                                        }
-                                                    >
-                                                        ✓ {row.paspor_file.name}
-                                                    </span>
-                                                )}
-                                                {!row.paspor_file &&
-                                                    row.paspor_file_url && (
-                                                        <a
-                                                            href={
-                                                                row.paspor_file_url
-                                                            }
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="flex items-center gap-0.5 text-[11px] font-extrabold text-emerald-700 hover:underline"
-                                                        >
-                                                            <ShieldCheck
-                                                                size={12}
-                                                            />{' '}
-                                                            Lihat
-                                                        </a>
-                                                    )}
-                                            </div>
-                                        </td>
-
-                                        {/* UPLOAD VAKSIN */}
-                                        <td className="px-3 py-2.5">
-                                            <div className="flex items-center gap-2">
-                                                <input
-                                                    type="file"
-                                                    id={`vaksin-upload-${index}`}
-                                                    className="hidden"
-                                                    accept=".jpg,.jpeg,.png,.pdf"
-                                                    onChange={(e) => {
-                                                        const file =
-                                                            e.target
-                                                                .files?.[0] ||
-                                                            null;
-                                                        handleFileChange(
-                                                            index,
-                                                            'vaksin_file',
-                                                            file,
-                                                        );
-                                                    }}
-                                                />
-                                                <label
-                                                    htmlFor={`vaksin-upload-${index}`}
-                                                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-100 px-2.5 py-1.5 text-[11px] font-bold text-slate-700 transition-colors hover:bg-slate-200"
-                                                >
-                                                    <FileUp size={13} /> Upload
-                                                </label>
-                                                {row.vaksin_file && (
-                                                    <span
-                                                        className="max-w-[80px] truncate text-[10px] font-extrabold text-emerald-600"
-                                                        title={
-                                                            row.vaksin_file.name
-                                                        }
-                                                    >
-                                                        ✓ {row.vaksin_file.name}
-                                                    </span>
-                                                )}
-                                                {!row.vaksin_file &&
-                                                    row.vaksin_file_url && (
-                                                        <a
-                                                            href={
-                                                                row.vaksin_file_url
-                                                            }
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="flex items-center gap-0.5 text-[11px] font-extrabold text-emerald-700 hover:underline"
-                                                        >
-                                                            <ShieldCheck
-                                                                size={12}
-                                                            />{' '}
-                                                            Lihat
-                                                        </a>
-                                                    )}
-                                            </div>
-                                        </td>
+                                        {renderDocumentUpload(
+                                            row,
+                                            index,
+                                            'paspor_file',
+                                            'paspor_file_url',
+                                        )}
+                                        {renderDocumentUpload(
+                                            row,
+                                            index,
+                                            'paspor_second_file',
+                                            'paspor_second_file_url',
+                                        )}
+                                        {renderDocumentUpload(
+                                            row,
+                                            index,
+                                            'ktp_file',
+                                            'ktp_file_url',
+                                        )}
+                                        {renderDocumentUpload(
+                                            row,
+                                            index,
+                                            'kk_file',
+                                            'kk_file_url',
+                                        )}
+                                        {renderDocumentUpload(
+                                            row,
+                                            index,
+                                            'vaksin_file',
+                                            'vaksin_file_url',
+                                        )}
 
                                         {/* AKSI */}
                                         <td className="px-4 py-2.5 text-center">

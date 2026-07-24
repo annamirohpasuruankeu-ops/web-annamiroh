@@ -304,9 +304,9 @@ xmlns="http://www.w3.org/TR/REC-html40">
 <body>
     <table>
         <tr>
-            <td colspan="16" style="border:0;font-weight:bold;font-size:12pt">Tanggal Keberangkatan: ' . ($selectedPackage?->departure_date ? $selectedPackage->departure_date->format('d/m/Y') : 'Semua Paket') . '</td>
+            <td colspan="19" style="border:0;font-weight:bold;font-size:12pt">Tanggal Keberangkatan: ' . ($selectedPackage?->departure_date ? $selectedPackage->departure_date->format('d/m/Y') : 'Semua Paket') . '</td>
         </tr>
-        <tr><td colspan="16" style="border:0">&nbsp;</td></tr>
+        <tr><td colspan="19" style="border:0">&nbsp;</td></tr>
         <thead>
             <tr>
                 <th>No</th>
@@ -323,8 +323,11 @@ xmlns="http://www.w3.org/TR/REC-html40">
                 <th>PP</th>
                 <th>VM</th>
                 <th>VP</th>
-                <th>Link Paspor</th>
-                <th>Link Vaksin</th>
+                <th>Paspor Utama</th>
+                <th>Paspor Lembar 2</th>
+                <th>KTP</th>
+                <th>KK</th>
+                <th>Vaksin</th>
             </tr>
         </thead>
         <tbody>';
@@ -350,8 +353,16 @@ xmlns="http://www.w3.org/TR/REC-html40">
             $issued = $item->paspor_issued ? date('d/m/Y', strtotime($item->paspor_issued)) : '';
             $expired = $item->paspor_expiry ? date('d/m/Y', strtotime($item->paspor_expiry)) : '';
 
-            $pasporLink = $item->paspor_file ? '<a href="' . asset('storage-file/' . $item->paspor_file) . '" class="link">Link Paspor</a>' : '-';
-            $vaksinLink = $item->vaksin_file ? '<a href="' . asset('storage-file/' . $item->vaksin_file) . '" class="link">Link Vaksin</a>' : '-';
+            $documentLink = static function (?string $path, string $label): string {
+                return $path
+                    ? '<a href="' . htmlspecialchars(route('storage-file.download', ['path' => $path]), ENT_QUOTES, 'UTF-8') . '" class="link">' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '</a>'
+                    : '-';
+            };
+            $pasporLink = $documentLink($item->paspor_file, 'Buka Paspor');
+            $pasporSecondLink = $documentLink($item->paspor_second_file, 'Buka Paspor Lembar 2');
+            $ktpLink = $documentLink($item->ktp_file, 'Buka KTP');
+            $kkLink = $documentLink($item->kk_file, 'Buka KK');
+            $vaksinLink = $documentLink($item->vaksin_file, 'Buka Vaksin');
 
             $html .= '<tr>
                 <td class="text-center">' . $no++ . '</td>
@@ -369,6 +380,9 @@ xmlns="http://www.w3.org/TR/REC-html40">
                 <td class="text-center">' . htmlspecialchars($item->vm ?: '-') . '</td>
                 <td class="text-center">' . htmlspecialchars($item->vp ?: '-') . '</td>
                 <td class="text-center">' . $pasporLink . '</td>
+                <td class="text-center">' . $pasporSecondLink . '</td>
+                <td class="text-center">' . $ktpLink . '</td>
+                <td class="text-center">' . $kkLink . '</td>
                 <td class="text-center">' . $vaksinLink . '</td>
             </tr>';
         }
@@ -1935,6 +1949,9 @@ xmlns="http://www.w3.org/TR/REC-html40">
                 'vm' => $member ? $member->vm : '-',
                 'vp' => $member ? $member->vp : '-',
                 'paspor_file_url' => ($member && $member->paspor_file) ? asset('storage-file/' . $member->paspor_file) : null,
+                'paspor_second_file_url' => ($member && $member->paspor_second_file) ? asset('storage-file/' . $member->paspor_second_file) : null,
+                'ktp_file_url' => ($member && $member->ktp_file) ? asset('storage-file/' . $member->ktp_file) : null,
+                'kk_file_url' => ($member && $member->kk_file) ? asset('storage-file/' . $member->kk_file) : null,
                 'vaksin_file_url' => ($member && $member->vaksin_file) ? asset('storage-file/' . $member->vaksin_file) : null,
             ];
         })->toArray();
@@ -1959,6 +1976,9 @@ xmlns="http://www.w3.org/TR/REC-html40">
                     'vm' => '-',
                     'vp' => '-',
                     'paspor_file_url' => null,
+                    'paspor_second_file_url' => null,
+                    'ktp_file_url' => null,
+                    'kk_file_url' => null,
                     'vaksin_file_url' => null,
                 ];
             }
@@ -2004,6 +2024,16 @@ xmlns="http://www.w3.org/TR/REC-html40">
         }
 
         $jamaahsData = $request->input('jamaahs', []);
+        $fileRules = [];
+        foreach (array_keys($jamaahsData) as $index) {
+            $fileRules["paspor_file_{$index}"] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+            $fileRules["paspor_second_file_{$index}"] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120';
+            $fileRules["ktp_file_{$index}"] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+            $fileRules["kk_file_{$index}"] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+            $fileRules["vaksin_file_{$index}"] = 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048';
+        }
+        $request->validate($fileRules);
+
         $groupUser = $order->groupUser;
         if (!$groupUser) {
             $groupUser = $order->agent ?: $request->user();
@@ -2043,6 +2073,15 @@ xmlns="http://www.w3.org/TR/REC-html40">
 
             if ($request->hasFile("paspor_file_{$index}")) {
                 $memberData['paspor_file'] = $request->file("paspor_file_{$index}")->store('documents', 'public');
+            }
+            if ($request->hasFile("paspor_second_file_{$index}")) {
+                $memberData['paspor_second_file'] = $request->file("paspor_second_file_{$index}")->store('documents', 'public');
+            }
+            if ($request->hasFile("ktp_file_{$index}")) {
+                $memberData['ktp_file'] = $request->file("ktp_file_{$index}")->store('documents', 'public');
+            }
+            if ($request->hasFile("kk_file_{$index}")) {
+                $memberData['kk_file'] = $request->file("kk_file_{$index}")->store('documents', 'public');
             }
             if ($request->hasFile("vaksin_file_{$index}")) {
                 $memberData['vaksin_file'] = $request->file("vaksin_file_{$index}")->store('documents', 'public');
@@ -2196,6 +2235,9 @@ xmlns="http://www.w3.org/TR/REC-html40">
                 'vm' => $member->vm,
                 'vp' => $member->vp,
                 'paspor_file_url' => $member->paspor_file ? asset('storage-file/' . $member->paspor_file) : null,
+                'paspor_second_file_url' => $member->paspor_second_file ? asset('storage-file/' . $member->paspor_second_file) : null,
+                'ktp_file_url' => $member->ktp_file ? asset('storage-file/' . $member->ktp_file) : null,
+                'kk_file_url' => $member->kk_file ? asset('storage-file/' . $member->kk_file) : null,
                 'vaksin_file_url' => $member->vaksin_file ? asset('storage-file/' . $member->vaksin_file) : null,
             ];
         });
